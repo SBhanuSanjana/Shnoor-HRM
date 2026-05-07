@@ -1,0 +1,379 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Admin Dashboard | ShnoorHR</title>
+    <link rel="stylesheet" href="../styles.css">
+    <link rel="stylesheet" href="admin.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+</head>
+<body class="admin-layout">
+    <div class="bg-glow-1"></div>
+    <div class="bg-glow-2"></div>
+
+    <!-- Sidebar -->
+    <aside class="sidebar">
+        <a href="#" class="logo"><i class="fa-solid fa-layer-group" style="color:var(--primary);"></i> ShnoorHR</a>
+        
+        <div class="nav-item active" data-target="dashboard"><i class="fa-solid fa-chart-pie"></i> Dashboard</div>
+        <div class="nav-item" data-target="companies"><i class="fa-solid fa-building"></i> Companies</div>
+        <div class="nav-item" data-target="subscriptions"><i class="fa-solid fa-receipt"></i> Subscriptions</div>
+        <div class="nav-item" data-target="transactions"><i class="fa-solid fa-money-bill-transfer"></i> Transactions</div>
+        <div class="nav-item" data-target="offline"><i class="fa-solid fa-file-invoice"></i> Offline Requests</div>
+        <div class="nav-item" data-target="emails"><i class="fa-solid fa-envelope"></i> Email Queries</div>
+        <div class="nav-item" data-target="superadmin"><i class="fa-solid fa-user-shield"></i> Super Admin</div>
+        <div class="nav-item" data-target="orgchart"><i class="fa-solid fa-sitemap"></i> Org Chart</div>
+        <div class="nav-item" data-target="website"><i class="fa-solid fa-globe"></i> Website Settings</div>
+        <div class="nav-item" data-target="notifications"><i class="fa-solid fa-bell"></i> Notifications</div>
+        <div class="nav-item" data-target="settings"><i class="fa-solid fa-gear"></i> Settings</div>
+        
+        <div style="flex:1;"></div>
+        <a href="../login.html" class="nav-item" style="color:#f43f5e;"><i class="fa-solid fa-right-from-bracket"></i> Logout</a>
+    </aside>
+
+    <!-- Main Content -->
+    <main class="main-content">
+        
+        <!-- View: Dashboard Overview -->
+        <section id="dashboard" class="view-section active">
+            <h2 class="gradient-text" style="margin-bottom: 2rem;">System Overview</h2>
+            
+            <div class="dashboard-grid">
+                <div class="glass-panel" style="padding: 1.5rem;">
+                    <h4 style="color:var(--text-muted); font-weight:500;">Total Companies</h4>
+                    <h1 id="dash-total" style="font-size:2.5rem; margin-top:0.5rem;">0</h1>
+                </div>
+                <div class="glass-panel" style="padding: 1.5rem;">
+                    <h4 style="color:var(--text-muted); font-weight:500;">Active Companies</h4>
+                    <h1 id="dash-active" style="font-size:2.5rem; color:#10b981; margin-top:0.5rem;">0</h1>
+                </div>
+                <div class="glass-panel" style="padding: 1.5rem;">
+                    <h4 style="color:var(--text-muted); font-weight:500;">Inactive Companies</h4>
+                    <h1 id="dash-inactive" style="font-size:2.5rem; color:#f43f5e; margin-top:0.5rem;">0</h1>
+                </div>
+                <div class="glass-panel" style="padding: 1.5rem;">
+                    <h4 style="color:var(--text-muted); font-weight:500;">Expired Trials</h4>
+                    <h1 style="font-size:2.5rem; color:#f59e0b; margin-top:0.5rem;">23</h1>
+                </div>
+            </div>
+        </section>
+
+        <!-- View: Companies -->
+        <section id="companies" class="view-section">
+            <h2 class="gradient-text" style="margin-bottom: 2rem;">Registered Companies</h2>
+            
+            <div class="glass-panel" style="margin-bottom: 2rem; padding: 1.5rem;">
+                <h4 style="margin-bottom: 1rem;">Add New Company</h4>
+                <form id="addCompanyForm" style="display: flex; gap: 1rem; align-items: flex-end;">
+                    <div class="form-group" style="flex: 1; margin-bottom: 0;">
+                        <label>Company Name</label>
+                        <input type="text" id="newCompanyName" class="form-control" required style="width:100%; padding:0.75rem; border-radius:8px; border:1px solid var(--glass-border); background:var(--bg-navy); color:#fff;">
+                    </div>
+                    <div class="form-group" style="flex: 1; margin-bottom: 0;">
+                        <label>Email Address</label>
+                        <input type="email" id="newCompanyEmail" class="form-control" required style="width:100%; padding:0.75rem; border-radius:8px; border:1px solid var(--glass-border); background:var(--bg-navy); color:#fff;">
+                    </div>
+                    <button type="submit" class="btn btn-primary" style="padding: 0.75rem 1.5rem;">Add Company</button>
+                </form>
+            </div>
+
+            <div class="table-container">
+                <table>
+                    <thead>
+                        <tr>
+                            <th>Company Name</th>
+                            <th>Email Address</th>
+                            <th>Total Users</th>
+                            <th>Status</th>
+                            <th>Actions</th>
+                        </tr>
+                    </thead>
+                    <tbody id="companiesList">
+                        <!-- Populated by JS -->
+                    </tbody>
+                </table>
+            </div>
+        </section>
+
+        <!-- View: Subscriptions -->
+        <section id="subscriptions" class="view-section">
+            <h2 class="gradient-text" style="margin-bottom: 2rem;">Subscriptions</h2>
+            <div class="table-container">
+                <table>
+                    <thead>
+                        <tr>
+                            <th>Company</th>
+                            <th>Plan</th>
+                            <th>Billing Cycle</th>
+                            <th>Status</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr>
+                            <td>TechFlow Inc.</td>
+                            <td>Enterprise</td>
+                            <td>Annually</td>
+                            <td><span class="status active">Active</span></td>
+                        </tr>
+                        <tr>
+                            <td>Startup Hub</td>
+                            <td>Pro</td>
+                            <td>Monthly</td>
+                            <td><span class="status expired">Expired</span></td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+        </section>
+
+        <!-- View: Transactions -->
+        <section id="transactions" class="view-section">
+            <h2 class="gradient-text" style="margin-bottom: 2rem;">Recent Transactions</h2>
+            <div class="table-container">
+                <table>
+                    <thead>
+                        <tr>
+                            <th>Transaction ID</th>
+                            <th>Company</th>
+                            <th>Amount</th>
+                            <th>Date</th>
+                            <th>Status</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr>
+                            <td>TXN-98432</td>
+                            <td>TechFlow Inc.</td>
+                            <td>$1,999.00</td>
+                            <td>Oct 24, 2026</td>
+                            <td><span class="status active">Success</span></td>
+                        </tr>
+                        <tr>
+                            <td>TXN-98431</td>
+                            <td>Startup Hub</td>
+                            <td>$99.00</td>
+                            <td>Oct 23, 2026</td>
+                            <td><span class="status inactive">Failed</span></td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+        </section>
+     <! -- View: Offline Requests -->
+        <section id="offline" class="view-section">
+            <h2 class="gradient-text" style="margin-bottom: 2rem;">Offline Payment Requests</h2>
+            <div class="table-container">
+                <table>
+                    <thead>
+                        <tr>
+                            <th>Company</th>
+                            <th>Amount</th>
+                            <th>Requested On</th>
+                            <th>Status</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr>
+                            <td>Nexus Dynamics</td>
+                            <td>$499.00</td>
+                            <td>Oct 22, 2026</td>
+                            <td><span class="status expired">Pending</span></td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+        </section>
+      
+        <!-- Email queries -->
+        <section id="emails" class="view-section">
+            <h2 class="gradient-text" style="margin-bottom: 2rem;">Email Queries</h2>
+            <div class="table-container">
+                <table>
+                    <thead>
+                        <tr>
+                            <th>From</th>
+                            <th>Email</th>
+                            <th>Subject</th>
+                            <th>Date</th>
+                            <th>Status</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr>
+                            <td>Jane Doe</td>
+                            <td>jane.doe@example.com</td>
+                            <td>Payment Issue</td>
+                            <td>Oct 21, 2026</td>
+                            <td><span class="status active">Unread</span></td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+        </section>
+        <!-- View: Super Admin -->
+        <section id="superadmin" class="view-section">
+            <h2 class="gradient-text" style="margin-bottom: 2rem;">Super Admin Management</h2>
+            <div class="table-container">
+                <table>
+                    <thead>
+                        <tr>
+                            <th>Name</th>
+                            <th>Email</th>
+                            <th>Role</th>
+                            <th>Status</th>
+                        </tr>
+                    </thead>            
+                    <tbody>
+                        <tr>
+                            <td>John Admin</td>
+                            <td>john.admin@example.com</td>
+                            <td>Super Admin</td>
+                            <td><span class="status active">Active</span></td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+        </section>
+        <!-- View: Website Settings -->
+        <section id="website" class="view-section">
+            <h2 class="gradient-text" style="margin-bottom: 2rem;">Website Settings</h2>
+            <div class="settings-container">
+                <div class="setting-item">
+                    <h4>Site Title</h4>
+                    <input type="text" value="Shnoor HRM" disabled>
+                </div>
+                <div class="setting-item">
+                    <h4>Primary Color</h4>
+                    <input type="color" value="#3b82f6" disabled>
+                </div>
+                <div class="setting-item">
+                    <h4>Secondary Color</h4>
+                    <input type="color" value="#10b981" disabled>
+                </div>
+                <div class="setting-item">
+                    <h4>Font Family</h4>
+                    <select disabled>
+                        <option value="sans-serif" selected>Sans Serif</option>
+                        <option value="serif">Serif</option>
+                        <option value="monospace">Monospace</option>
+                    </select>
+                </div>
+            </div>
+        </section>
+
+        <!-- View: Settings -->
+        <section id="settings" class="view-section">
+            <h2 class="gradient-text" style="margin-bottom: 2rem;">Admin Settings</h2>
+            <div class="glass-panel" style="padding: 2rem;">
+                <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 2rem;">
+                    <div>
+                        <h4 style="margin-bottom: 1rem;">Profile Settings</h4>
+                        <div class="form-group">
+                            <label>Admin Username</label>
+                            <input type="text" class="form-control" value="admin" readonly style="width:100%; padding:0.75rem; border-radius:8px; border:1px solid var(--glass-border); background:var(--bg-navy); color:#fff; opacity: 0.7;">
+                        </div>
+                        <button class="btn btn-primary" style="margin-top: 1rem;">Save Changes</button>
+                    </div>
+                    <div>
+                        <h4 style="margin-bottom: 1rem;">System Security</h4>
+                        <div style="display: flex; justify-content: space-between; align-items: center; padding: 1rem; background: rgba(255,255,255,0.05); border-radius: 8px;">
+                            <span>Two-Factor Authentication</span>
+                            <span class="status inactive">Disabled</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>  
+        
+        <!-- View: Org Chart -->
+        <section id="orgchart" class="view-section">
+            <h2 class="gradient-text" style="margin-bottom: 2rem;">Organization Chart</h2>
+            
+            <div class="glass-panel" style="margin-bottom: 2rem; padding: 1.5rem;">
+                <h4 style="margin-bottom: 1rem;">Add Node to Org Chart</h4>
+                <form id="addOrgNodeForm" style="display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 1rem; align-items: flex-end;">
+                    <div class="form-group">
+                        <label>Name</label>
+                        <input type="text" id="nodeName" class="form-control" required style="width:100%; padding:0.75rem; border-radius:8px; border:1px solid var(--glass-border); background:var(--bg-navy); color:#fff;">
+                    </div>
+                    <div class="form-group">
+                        <label>Role</label>
+                        <input type="text" id="nodeRole" class="form-control" required style="width:100%; padding:0.75rem; border-radius:8px; border:1px solid var(--glass-border); background:var(--bg-navy); color:#fff;">
+                    </div>
+                    <div class="form-group">
+                        <label>Department</label>
+                        <input type="text" id="nodeDept" class="form-control" required style="width:100%; padding:0.75rem; border-radius:8px; border:1px solid var(--glass-border); background:var(--bg-navy); color:#fff;">
+                    </div>
+                    <div class="form-group">
+                        <label>Company</label>
+                        <input type="text" id="nodeCompany" class="form-control" required style="width:100%; padding:0.75rem; border-radius:8px; border:1px solid var(--glass-border); background:var(--bg-navy); color:#fff;">
+                    </div>
+                    <div class="form-group">
+                        <label>Employee Months</label>
+                        <input type="number" id="nodeMonths" class="form-control" required style="width:100%; padding:0.75rem; border-radius:8px; border:1px solid var(--glass-border); background:var(--bg-navy); color:#fff;">
+                    </div>
+                    <div class="form-group">
+                        <label>Work Mode</label>
+                        <select id="nodeWorkMode" class="form-control" style="width:100%; padding:0.75rem; border-radius:8px; border:1px solid var(--glass-border); background:var(--bg-navy); color:#fff;">
+                            <option value="onsite">Onsite</option>
+                            <option value="hybrid">Hybrid</option>
+                            <option value="remote" selected>Remote</option>
+                        </select>
+                    </div>
+                    <div class="form-group">
+                        <label>Reports To (Manager ID)</label>
+                        <input type="number" id="nodeManager" class="form-control" style="width:100%; padding:0.75rem; border-radius:8px; border:1px solid var(--glass-border); background:var(--bg-navy); color:#fff;" placeholder="Leave empty for Top Level">
+                    </div>
+                    <button type="submit" class="btn btn-primary" style="padding: 0.75rem 1.5rem;">Add Node</button>
+                </form>
+            </div>
+
+            <div class="org-chart-container">
+                <div id="orgChartTree" class="tree">
+                    <!-- Recursive Tree Structure will be injected here -->
+                </div>
+            </div>
+        </section>
+        
+        <!-- View: Notifications -->
+        <section id="notifications" class="view-section">
+            <h2 class="gradient-text" style="margin-bottom: 2rem;">Announcements</h2>
+            
+            <div class="glass-panel" style="margin-bottom: 2rem; padding: 1.5rem;">
+                <h4 style="margin-bottom: 1rem;">Send Announcement to Managers</h4>
+                <form id="sendNotificationForm" style="display: flex; flex-direction: column; gap: 1rem;">
+                    <div class="form-group" style="margin-bottom: 0;">
+                        <label>Title</label>
+                        <input type="text" id="notifTitle" class="form-control" required style="width:100%; padding:0.75rem; border-radius:8px; border:1px solid var(--glass-border); background:var(--bg-navy); color:#fff;" placeholder="Announcement Title">
+                    </div>
+                    <div class="form-group" style="margin-bottom: 0;">
+                        <label>Message</label>
+                        <textarea id="notifMessage" class="form-control" required style="width:100%; padding:0.75rem; border-radius:8px; border:1px solid var(--glass-border); background:var(--bg-navy); color:#fff; min-height: 100px;" placeholder="Type your message here..."></textarea>
+                    </div>
+                    <button type="submit" class="btn btn-primary" style="padding: 0.75rem 1.5rem; width: fit-content;">Send Announcement</button>
+                </form>
+            </div>
+
+            <h4 style="margin-bottom: 1rem; color: var(--text-main);">Sent Announcements</h4>
+            <div class="table-container">
+                <table>
+                    <thead>
+                        <tr>
+                            <th>Date</th>
+                            <th>Title</th>
+                            <th>Message</th>
+                            <th>Target</th>
+                        </tr>
+                    </thead>
+                    <tbody id="sentNotificationsList">
+                        <!-- Populated by JS -->
+                    </tbody>
+                </table>
+            </div>
+        </section>
+
+    </main>
+
+    <script src="admin.js?v=3"></script>
+</body>
+</html>

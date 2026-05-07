@@ -1,0 +1,2171 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <title>Manager Dashboard | ShnoorHR</title>
+    <link rel="stylesheet" href="../styles.css">
+    <link rel="stylesheet" href="manager.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+</head>
+
+<body class="admin-layout mode-manager">
+    <div class="bg-glow-1"></div>
+    <div class="bg-glow-2"></div>
+
+    <!-- Sidebar -->
+    <aside class="sidebar">
+        <a href="#" class="logo"><i class="fa-solid fa-user-tie" style="color:var(--primary);"></i> ShnoorHR</a>
+
+        <div class="nav-item active" data-target="dashboard"><i class="fa-solid fa-chart-pie"></i> Dashboard</div>
+        <div class="nav-item manager-only" data-target="employees"><i class="fa-solid fa-users"></i> Employees</div>
+        <div class="nav-item manager-only" data-target="manage-profiles-section"><i class="fa-solid fa-id-card"></i> Manage Profiles</div>
+        <div class="nav-item" data-target="attendance"><i class="fa-solid fa-calendar-check"></i> Attendance</div>
+        <div class="nav-item" data-target="leaves"><i class="fa-solid fa-umbrella-beach"></i> Leaves</div>
+        <div class="nav-item manager-only" data-target="tasks"><i class="fa-solid fa-list-check"></i> Tasks</div>
+        <div class="nav-item self-only" data-target="documents"><i class="fa-solid fa-folder-open"></i> Documents</div>
+        <div class="nav-item self-only" data-target="profile"><i class="fa-solid fa-user"></i> Profile</div>
+        <div class="nav-item manager-only" data-target="payroll"><i class="fa-solid fa-file-invoice-dollar"></i> Payroll
+        </div>
+        <div class="nav-item" data-target="orgchart"><i class="fa-solid fa-sitemap"></i> Org Chart</div>
+        <div class="nav-item" data-target="notifications"><i class="fa-solid fa-bell"></i> Notifications</div>
+
+
+        <div style="flex:1;"></div>
+        <a href="../login.html" class="nav-item" style="color:#f43f5e;"><i class="fa-solid fa-right-from-bracket"></i>
+            Logout</a>
+    </aside>
+
+    <!-- Main Content -->
+    <main class="main-content">
+
+        <!-- Mode Toggle -->
+        <div
+            style="display: flex; gap: 1rem; margin-bottom: 2rem; background: rgba(255,255,255,0.05); padding: 0.5rem; border-radius: 12px; width: fit-content;">
+            <button class="btn btn-ghost mode-toggle-btn" data-mode="self" style="padding: 0.5rem 1.5rem;">Self</button>
+            <button class="btn btn-primary mode-toggle-btn active" data-mode="manager"
+                style="padding: 0.5rem 1.5rem;">Manager</button>
+        </div>
+
+        <!-- View: Dashboard -->
+        <section id="dashboard" class="view-section active">
+            <!-- Manager Dashboard -->
+            <div id="managerView" class="manager-only">
+                <h2 class="gradient-text" style="margin-bottom: 2rem;">Team Dashboard</h2>
+                <div class="dashboard-grid">
+                    <div class="glass-panel" style="padding: 1.5rem;">
+                        <h4 style="color:var(--text-muted); font-weight:500;">Total Team Members</h4>
+                        <h1 id="dash-team-total" style="font-size:2.5rem; margin-top:0.5rem;">0</h1>
+                    </div>
+                    <div class="glass-panel" style="padding: 1.5rem;">
+                        <h4 style="color:var(--text-muted); font-weight:500;">Present Today</h4>
+                        <h1 id="dash-team-present" style="font-size:2.5rem; color:#10b981; margin-top:0.5rem;">0</h1>
+                    </div>
+                    <div class="glass-panel" style="padding: 1.5rem;">
+                        <h4 style="color:var(--text-muted); font-weight:500;">On Leave</h4>
+                        <h1 id="dash-team-leave" style="font-size:2.5rem; color:#f59e0b; margin-top:0.5rem;">0</h1>
+                    </div>
+                </div>
+                <!-- Simple CSS Charts -->
+                <div class="dual-panel" style="margin-top: 2rem;">
+                    <div class="glass-panel" style="padding: 1.5rem;">
+                        <h4 style="margin-bottom: 1rem;">Employees by Role</h4>
+                        <div style="display: flex; height: 20px; border-radius: 10px; overflow: hidden;">
+                            <div style="width: 50%; background: #3b82f6;" title="Developers (50%)"></div>
+                            <div style="width: 30%; background: #10b981;" title="Designers (30%)"></div>
+                            <div style="width: 20%; background: #f59e0b;" title="Managers (20%)"></div>
+                        </div>
+                        <div
+                            style="display: flex; gap: 1rem; margin-top: 1rem; font-size: 0.8rem; color: var(--text-muted);">
+                            <span><i class="fa-solid fa-circle" style="color:#3b82f6;"></i> Devs</span>
+                            <span><i class="fa-solid fa-circle" style="color:#10b981;"></i> Designers</span>
+                            <span><i class="fa-solid fa-circle" style="color:#f59e0b;"></i> Managers</span>
+                        </div>
+                    </div>
+                    <div class="glass-panel" style="padding: 1.5rem;">
+                        <h4 style="margin-bottom: 1rem;">Weekly Attendance</h4>
+                        <div style="display: flex; align-items: flex-end; gap: 10px; height: 100px;">
+                            <div style="flex: 1; background: #3b82f6; height: 90%; border-radius: 4px 4px 0 0;"></div>
+                            <div style="flex: 1; background: #3b82f6; height: 95%; border-radius: 4px 4px 0 0;"></div>
+                            <div style="flex: 1; background: #3b82f6; height: 85%; border-radius: 4px 4px 0 0;"></div>
+                            <div style="flex: 1; background: #3b82f6; height: 100%; border-radius: 4px 4px 0 0;"></div>
+                            <div style="flex: 1; background: #3b82f6; height: 80%; border-radius: 4px 4px 0 0;"></div>
+                        </div>
+                        <div
+                            style="display: flex; justify-content: space-between; margin-top: 0.5rem; font-size: 0.8rem; color: var(--text-muted);">
+                            <span>M</span><span>T</span><span>W</span><span>T</span><span>F</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Self Dashboard -->
+            <div id="selfView" class="self-only" style="display: none;">
+                <h2 class="gradient-text" style="margin-bottom: 2rem;">Personal Dashboard</h2>
+
+                <!-- Manager Profile -->
+                <div class="glass-panel"
+                    style="padding: 1.5rem; margin-bottom: 2rem; display: flex; align-items: center; gap: 2rem;">
+                    <div
+                        style="width: 80px; height: 80px; border-radius: 50%; background: var(--glass-border); display: flex; align-items: center; justify-content: center; font-size: 2.5rem; color: var(--text-muted);">
+                        <i class="fa-solid fa-user"></i>
+                    </div>
+                    <div>
+                        <h3 id="self-dash-name" style="margin-bottom: 0.25rem;">-</h3>
+                        <p style="color:var(--text-muted); font-size: 0.9rem;"><span id="self-dash-role">-</span></p>
+                        <p id="self-dash-email" style="color:var(--text-muted); font-size: 0.9rem;">-</p>
+                    </div>
+                </div>
+
+                <!-- Performance Section -->
+                <h4 style="margin-bottom: 1rem;">My Performance</h4>
+                <div class="dual-panel">
+                    <div class="glass-panel" style="padding: 1.5rem;">
+                        <h4 style="color:var(--text-muted); font-weight:500;">Task Completion</h4>
+                        <div style="display: flex; align-items: flex-end; gap: 10px; height: 80px; margin-top: 1rem;">
+                            <div style="flex: 1; background: #10b981; height: 80%; border-radius: 4px 4px 0 0;"
+                                title="Week 1"></div>
+                            <div style="flex: 1; background: #10b981; height: 90%; border-radius: 4px 4px 0 0;"
+                                title="Week 2"></div>
+                            <div style="flex: 1; background: #10b981; height: 100%; border-radius: 4px 4px 0 0;"
+                                title="Week 3"></div>
+                            <div style="flex: 1; background: #10b981; height: 85%; border-radius: 4px 4px 0 0;"
+                                title="Week 4"></div>
+                        </div>
+                    </div>
+                    <div class="glass-panel" style="padding: 1.5rem;">
+                        <div style="display: flex; justify-content: space-between; margin-bottom: 1rem;">
+                            <h4 style="color:var(--text-muted); font-weight:500;">Monthly Stats</h4>
+                        </div>
+                        <div style="display: flex; flex-direction: column; gap: 0.5rem;">
+                            <div style="display: flex; justify-content: space-between;"><span>Attendance Rate</span>
+                                <span style="color:#10b981; font-weight:600;">98%</span></div>
+                            <div style="display: flex; justify-content: space-between;"><span>Tasks Done</span> <span
+                                    style="color:var(--primary); font-weight:600;">45/48</span></div>
+                            <div style="display: flex; justify-content: space-between;"><span>Avg Response</span> <span
+                                    style="color:#f59e0b; font-weight:600;">1.2 hrs</span></div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- View: Employees (Manager Only) -->
+        <section id="employees" class="view-section manager-only">
+            <h2 class="gradient-text" style="margin-bottom: 2rem;">My Team</h2>
+            <div class="table-container">
+                <table>
+                    <thead>
+                        <tr>
+                            <th>Employee</th>
+                            <th>Email</th>
+                            <th>Role</th>
+                            <th>Status</th>
+                        </tr>
+                    </thead>
+                    <tbody id="employeesList">
+                        <!-- Populated by JS -->
+                    </tbody>
+                </table>
+            </div>
+        </section>
+
+        <!-- View: Attendance -->
+        <section id="attendance" class="view-section">
+            <div class="manager-only">
+                <h2 class="gradient-text" style="margin-bottom: 2rem;">Team Attendance</h2>
+                <div class="table-container">
+                    <table>
+                        <thead>
+                            <tr>
+                                <th>Employee</th>
+                                <th>Date</th>
+                                <th>Clock In</th>
+                                <th>Clock Out</th>
+                                <th>Status</th>
+                            </tr>
+                        </thead>
+                        <tbody id="teamAttendanceList">
+                            <!-- Populated by JS -->
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+
+            <div class="self-only" style="display: none;">
+                <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 2rem;">
+                    <h2 class="gradient-text">My Attendance Logs</h2>
+                    <div>
+                        <button id="clock-in-btn" class="btn btn-primary" style="padding: 0.5rem 1rem;"><i
+                                class="fa-solid fa-clock"></i> Clock In</button>
+                        <button id="clock-out-btn" class="btn btn-ghost" style="padding: 0.5rem 1rem;">Clock
+                            Out</button>
+                    </div>
+                </div>
+                <div class="table-container">
+                    <table>
+                        <thead>
+                            <tr>
+                                <th>Date</th>
+                                <th>Clock In</th>
+                                <th>Clock Out</th>
+                                <th>Status</th>
+                            </tr>
+                        </thead>
+                        <tbody id="selfAttendanceList">
+                            <!-- Populated by JS -->
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </section>
+
+        <!-- View: Leaves -->
+        <section id="leaves" class="view-section">
+            <h2 class="gradient-text manager-only" style="margin-bottom: 2rem;">Team Leave Requests</h2>
+            <h2 class="gradient-text self-only" style="margin-bottom: 2rem; display: none;">My Leave Requests</h2>
+
+            <!-- Calendar Grid -->
+            <div class="glass-panel self-only" style="padding: 1.5rem; margin-bottom: 2rem; display: none;">
+                <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 1.5rem;">
+                    <h3 style="color: var(--text-main);">Year 2026 Calendar</h3>
+                    <div style="display: flex; gap: 1rem; font-size: 0.8rem;">
+                        <span style="display: flex; align-items: center; gap: 0.5rem;">
+                            <div style="width:12px; height:12px; border-radius:3px; background:rgba(255,255,255,0.05);">
+                            </div> Weekend
+                        </span>
+                        <span style="display: flex; align-items: center; gap: 0.5rem;">
+                            <div style="width:12px; height:12px; border-radius:3px; background:rgba(16,185,129,0.2);">
+                            </div> Holiday
+                        </span>
+                        <span style="display: flex; align-items: center; gap: 0.5rem;">
+                            <div style="width:12px; height:12px; border-radius:3px; background:rgba(245,158,11,0.2);">
+                            </div> Leave
+                        </span>
+                    </div>
+                </div>
+
+                <table style="width: 100%; border-collapse: collapse;">
+                    <tbody>
+                        <!-- January -->
+                        <tr onclick="this.nextElementSibling.style.display = this.nextElementSibling.style.display === 'none' ? 'table-row' : 'none'"
+                            style="cursor: pointer; border-bottom: 1px solid rgba(255,255,255,0.05);">
+                            <td style="padding: 1rem; font-weight: 600; color: var(--text-main);">January 2026</td>
+                            <td style="text-align: right; padding: 1rem; color: var(--text-muted);"><i
+                                    class="fa-solid fa-chevron-down"></i></td>
+                        </tr>
+                        <tr style="display: none;">
+                            <td colspan="2" style="padding: 1.5rem 0;">
+                                <div
+                                    style="display: grid; grid-template-columns: repeat(7, 1fr); gap: 0.5rem; text-align: center;">
+                                    <div style="font-weight: 600; color: var(--text-muted); padding-bottom: 0.5rem;">Sun
+                                    </div>
+                                    <div style="font-weight: 600; color: var(--text-muted); padding-bottom: 0.5rem;">Mon
+                                    </div>
+                                    <div style="font-weight: 600; color: var(--text-muted); padding-bottom: 0.5rem;">Tue
+                                    </div>
+                                    <div style="font-weight: 600; color: var(--text-muted); padding-bottom: 0.5rem;">Wed
+                                    </div>
+                                    <div style="font-weight: 600; color: var(--text-muted); padding-bottom: 0.5rem;">Thu
+                                    </div>
+                                    <div style="font-weight: 600; color: var(--text-muted); padding-bottom: 0.5rem;">Fri
+                                    </div>
+                                    <div style="font-weight: 600; color: var(--text-muted); padding-bottom: 0.5rem;">Sat
+                                    </div>
+                                    <div></div>
+                                    <div></div>
+                                    <div></div>
+                                    <div style="padding: 1rem 0; border-radius: 8px; background: rgba(16,185,129,0.2); color: #10b981; font-weight:bold;"
+                                        title="New Year">1</div>
+                                    <div
+                                        style="padding: 1rem 0; border-radius: 8px; background: rgba(255,255,255,0.02); ">
+                                        2</div>
+                                    <div
+                                        style="padding: 1rem 0; border-radius: 8px; background: rgba(255,255,255,0.02); ">
+                                        3</div>
+                                    <div style="padding: 1rem 0; border-radius: 8px; background: rgba(255,255,255,0.05); color: var(--text-muted);"
+                                        title="Weekend">4</div>
+                                    <div style="padding: 1rem 0; border-radius: 8px; background: rgba(255,255,255,0.05); color: var(--text-muted);"
+                                        title="Weekend">5</div>
+                                    <div
+                                        style="padding: 1rem 0; border-radius: 8px; background: rgba(255,255,255,0.02); ">
+                                        6</div>
+                                    <div
+                                        style="padding: 1rem 0; border-radius: 8px; background: rgba(255,255,255,0.02); ">
+                                        7</div>
+                                    <div
+                                        style="padding: 1rem 0; border-radius: 8px; background: rgba(255,255,255,0.02); ">
+                                        8</div>
+                                    <div
+                                        style="padding: 1rem 0; border-radius: 8px; background: rgba(255,255,255,0.02); ">
+                                        9</div>
+                                    <div
+                                        style="padding: 1rem 0; border-radius: 8px; background: rgba(255,255,255,0.02); ">
+                                        10</div>
+                                    <div style="padding: 1rem 0; border-radius: 8px; background: rgba(255,255,255,0.05); color: var(--text-muted);"
+                                        title="Weekend">11</div>
+                                    <div style="padding: 1rem 0; border-radius: 8px; background: rgba(255,255,255,0.05); color: var(--text-muted);"
+                                        title="Weekend">12</div>
+                                    <div
+                                        style="padding: 1rem 0; border-radius: 8px; background: rgba(255,255,255,0.02); ">
+                                        13</div>
+                                    <div
+                                        style="padding: 1rem 0; border-radius: 8px; background: rgba(255,255,255,0.02); ">
+                                        14</div>
+                                    <div
+                                        style="padding: 1rem 0; border-radius: 8px; background: rgba(255,255,255,0.02); ">
+                                        15</div>
+                                    <div
+                                        style="padding: 1rem 0; border-radius: 8px; background: rgba(255,255,255,0.02); ">
+                                        16</div>
+                                    <div
+                                        style="padding: 1rem 0; border-radius: 8px; background: rgba(255,255,255,0.02); ">
+                                        17</div>
+                                    <div style="padding: 1rem 0; border-radius: 8px; background: rgba(255,255,255,0.05); color: var(--text-muted);"
+                                        title="Weekend">18</div>
+                                    <div style="padding: 1rem 0; border-radius: 8px; background: rgba(255,255,255,0.05); color: var(--text-muted);"
+                                        title="Weekend">19</div>
+                                    <div
+                                        style="padding: 1rem 0; border-radius: 8px; background: rgba(255,255,255,0.02); ">
+                                        20</div>
+                                    <div
+                                        style="padding: 1rem 0; border-radius: 8px; background: rgba(255,255,255,0.02); ">
+                                        21</div>
+                                    <div
+                                        style="padding: 1rem 0; border-radius: 8px; background: rgba(255,255,255,0.02); ">
+                                        22</div>
+                                    <div
+                                        style="padding: 1rem 0; border-radius: 8px; background: rgba(255,255,255,0.02); ">
+                                        23</div>
+                                    <div
+                                        style="padding: 1rem 0; border-radius: 8px; background: rgba(255,255,255,0.02); ">
+                                        24</div>
+                                    <div style="padding: 1rem 0; border-radius: 8px; background: rgba(255,255,255,0.05); color: var(--text-muted);"
+                                        title="Weekend">25</div>
+                                    <div style="padding: 1rem 0; border-radius: 8px; background: rgba(255,255,255,0.05); color: var(--text-muted);"
+                                        title="Weekend">26</div>
+                                    <div
+                                        style="padding: 1rem 0; border-radius: 8px; background: rgba(255,255,255,0.02); ">
+                                        27</div>
+                                    <div
+                                        style="padding: 1rem 0; border-radius: 8px; background: rgba(255,255,255,0.02); ">
+                                        28</div>
+                                </div>
+                            </td>
+                        </tr>
+                        <!-- February -->
+                        <tr onclick="this.nextElementSibling.style.display = this.nextElementSibling.style.display === 'none' ? 'table-row' : 'none'"
+                            style="cursor: pointer; border-bottom: 1px solid rgba(255,255,255,0.05);">
+                            <td style="padding: 1rem; font-weight: 600; color: var(--text-main);">February 2026</td>
+                            <td style="text-align: right; padding: 1rem; color: var(--text-muted);"><i
+                                    class="fa-solid fa-chevron-down"></i></td>
+                        </tr>
+                        <tr style="display: none;">
+                            <td colspan="2" style="padding: 1.5rem 0;">
+                                <div
+                                    style="display: grid; grid-template-columns: repeat(7, 1fr); gap: 0.5rem; text-align: center;">
+                                    <div style="font-weight: 600; color: var(--text-muted); padding-bottom: 0.5rem;">Sun
+                                    </div>
+                                    <div style="font-weight: 600; color: var(--text-muted); padding-bottom: 0.5rem;">Mon
+                                    </div>
+                                    <div style="font-weight: 600; color: var(--text-muted); padding-bottom: 0.5rem;">Tue
+                                    </div>
+                                    <div style="font-weight: 600; color: var(--text-muted); padding-bottom: 0.5rem;">Wed
+                                    </div>
+                                    <div style="font-weight: 600; color: var(--text-muted); padding-bottom: 0.5rem;">Thu
+                                    </div>
+                                    <div style="font-weight: 600; color: var(--text-muted); padding-bottom: 0.5rem;">Fri
+                                    </div>
+                                    <div style="font-weight: 600; color: var(--text-muted); padding-bottom: 0.5rem;">Sat
+                                    </div>
+                                    <div></div>
+                                    <div></div>
+                                    <div></div>
+                                    <div></div>
+                                    <div
+                                        style="padding: 1rem 0; border-radius: 8px; background: rgba(255,255,255,0.02); ">
+                                        1</div>
+                                    <div
+                                        style="padding: 1rem 0; border-radius: 8px; background: rgba(255,255,255,0.02); ">
+                                        2</div>
+                                    <div style="padding: 1rem 0; border-radius: 8px; background: rgba(255,255,255,0.05); color: var(--text-muted);"
+                                        title="Weekend">3</div>
+                                    <div style="padding: 1rem 0; border-radius: 8px; background: rgba(255,255,255,0.05); color: var(--text-muted);"
+                                        title="Weekend">4</div>
+                                    <div
+                                        style="padding: 1rem 0; border-radius: 8px; background: rgba(255,255,255,0.02); ">
+                                        5</div>
+                                    <div
+                                        style="padding: 1rem 0; border-radius: 8px; background: rgba(255,255,255,0.02); ">
+                                        6</div>
+                                    <div
+                                        style="padding: 1rem 0; border-radius: 8px; background: rgba(255,255,255,0.02); ">
+                                        7</div>
+                                    <div
+                                        style="padding: 1rem 0; border-radius: 8px; background: rgba(255,255,255,0.02); ">
+                                        8</div>
+                                    <div
+                                        style="padding: 1rem 0; border-radius: 8px; background: rgba(255,255,255,0.02); ">
+                                        9</div>
+                                    <div style="padding: 1rem 0; border-radius: 8px; background: rgba(255,255,255,0.05); color: var(--text-muted);"
+                                        title="Weekend">10</div>
+                                    <div style="padding: 1rem 0; border-radius: 8px; background: rgba(255,255,255,0.05); color: var(--text-muted);"
+                                        title="Weekend">11</div>
+                                    <div
+                                        style="padding: 1rem 0; border-radius: 8px; background: rgba(255,255,255,0.02); ">
+                                        12</div>
+                                    <div
+                                        style="padding: 1rem 0; border-radius: 8px; background: rgba(255,255,255,0.02); ">
+                                        13</div>
+                                    <div
+                                        style="padding: 1rem 0; border-radius: 8px; background: rgba(255,255,255,0.02); ">
+                                        14</div>
+                                    <div
+                                        style="padding: 1rem 0; border-radius: 8px; background: rgba(255,255,255,0.02); ">
+                                        15</div>
+                                    <div
+                                        style="padding: 1rem 0; border-radius: 8px; background: rgba(255,255,255,0.02); ">
+                                        16</div>
+                                    <div style="padding: 1rem 0; border-radius: 8px; background: rgba(255,255,255,0.05); color: var(--text-muted);"
+                                        title="Weekend">17</div>
+                                    <div style="padding: 1rem 0; border-radius: 8px; background: rgba(255,255,255,0.05); color: var(--text-muted);"
+                                        title="Weekend">18</div>
+                                    <div
+                                        style="padding: 1rem 0; border-radius: 8px; background: rgba(255,255,255,0.02); ">
+                                        19</div>
+                                    <div
+                                        style="padding: 1rem 0; border-radius: 8px; background: rgba(255,255,255,0.02); ">
+                                        20</div>
+                                    <div
+                                        style="padding: 1rem 0; border-radius: 8px; background: rgba(255,255,255,0.02); ">
+                                        21</div>
+                                    <div
+                                        style="padding: 1rem 0; border-radius: 8px; background: rgba(255,255,255,0.02); ">
+                                        22</div>
+                                    <div
+                                        style="padding: 1rem 0; border-radius: 8px; background: rgba(255,255,255,0.02); ">
+                                        23</div>
+                                    <div style="padding: 1rem 0; border-radius: 8px; background: rgba(255,255,255,0.05); color: var(--text-muted);"
+                                        title="Weekend">24</div>
+                                    <div style="padding: 1rem 0; border-radius: 8px; background: rgba(255,255,255,0.05); color: var(--text-muted);"
+                                        title="Weekend">25</div>
+                                    <div
+                                        style="padding: 1rem 0; border-radius: 8px; background: rgba(255,255,255,0.02); ">
+                                        26</div>
+                                    <div
+                                        style="padding: 1rem 0; border-radius: 8px; background: rgba(255,255,255,0.02); ">
+                                        27</div>
+                                    <div
+                                        style="padding: 1rem 0; border-radius: 8px; background: rgba(255,255,255,0.02); ">
+                                        28</div>
+                                    <div
+                                        style="padding: 1rem 0; border-radius: 8px; background: rgba(255,255,255,0.02); ">
+                                        29</div>
+                                    <div
+                                        style="padding: 1rem 0; border-radius: 8px; background: rgba(255,255,255,0.02); ">
+                                        30</div>
+                                </div>
+                            </td>
+                        </tr>
+                        <!-- March -->
+                        <tr onclick="this.nextElementSibling.style.display = this.nextElementSibling.style.display === 'none' ? 'table-row' : 'none'"
+                            style="cursor: pointer; border-bottom: 1px solid rgba(255,255,255,0.05);">
+                            <td style="padding: 1rem; font-weight: 600; color: var(--text-main);">March 2026</td>
+                            <td style="text-align: right; padding: 1rem; color: var(--text-muted);"><i
+                                    class="fa-solid fa-chevron-down"></i></td>
+                        </tr>
+                        <tr style="display: none;">
+                            <td colspan="2" style="padding: 1.5rem 0;">
+                                <div
+                                    style="display: grid; grid-template-columns: repeat(7, 1fr); gap: 0.5rem; text-align: center;">
+                                    <div style="font-weight: 600; color: var(--text-muted); padding-bottom: 0.5rem;">Sun
+                                    </div>
+                                    <div style="font-weight: 600; color: var(--text-muted); padding-bottom: 0.5rem;">Mon
+                                    </div>
+                                    <div style="font-weight: 600; color: var(--text-muted); padding-bottom: 0.5rem;">Tue
+                                    </div>
+                                    <div style="font-weight: 600; color: var(--text-muted); padding-bottom: 0.5rem;">Wed
+                                    </div>
+                                    <div style="font-weight: 600; color: var(--text-muted); padding-bottom: 0.5rem;">Thu
+                                    </div>
+                                    <div style="font-weight: 600; color: var(--text-muted); padding-bottom: 0.5rem;">Fri
+                                    </div>
+                                    <div style="font-weight: 600; color: var(--text-muted); padding-bottom: 0.5rem;">Sat
+                                    </div>
+                                    <div></div>
+                                    <div></div>
+                                    <div></div>
+                                    <div></div>
+                                    <div></div>
+                                    <div
+                                        style="padding: 1rem 0; border-radius: 8px; background: rgba(255,255,255,0.02); ">
+                                        1</div>
+                                    <div style="padding: 1rem 0; border-radius: 8px; background: rgba(255,255,255,0.05); color: var(--text-muted);"
+                                        title="Weekend">2</div>
+                                    <div style="padding: 1rem 0; border-radius: 8px; background: rgba(255,255,255,0.05); color: var(--text-muted);"
+                                        title="Weekend">3</div>
+                                    <div
+                                        style="padding: 1rem 0; border-radius: 8px; background: rgba(255,255,255,0.02); ">
+                                        4</div>
+                                    <div
+                                        style="padding: 1rem 0; border-radius: 8px; background: rgba(255,255,255,0.02); ">
+                                        5</div>
+                                    <div
+                                        style="padding: 1rem 0; border-radius: 8px; background: rgba(255,255,255,0.02); ">
+                                        6</div>
+                                    <div
+                                        style="padding: 1rem 0; border-radius: 8px; background: rgba(255,255,255,0.02); ">
+                                        7</div>
+                                    <div
+                                        style="padding: 1rem 0; border-radius: 8px; background: rgba(255,255,255,0.02); ">
+                                        8</div>
+                                    <div style="padding: 1rem 0; border-radius: 8px; background: rgba(255,255,255,0.05); color: var(--text-muted);"
+                                        title="Weekend">9</div>
+                                    <div style="padding: 1rem 0; border-radius: 8px; background: rgba(255,255,255,0.05); color: var(--text-muted);"
+                                        title="Weekend">10</div>
+                                    <div
+                                        style="padding: 1rem 0; border-radius: 8px; background: rgba(255,255,255,0.02); ">
+                                        11</div>
+                                    <div
+                                        style="padding: 1rem 0; border-radius: 8px; background: rgba(255,255,255,0.02); ">
+                                        12</div>
+                                    <div
+                                        style="padding: 1rem 0; border-radius: 8px; background: rgba(255,255,255,0.02); ">
+                                        13</div>
+                                    <div
+                                        style="padding: 1rem 0; border-radius: 8px; background: rgba(255,255,255,0.02); ">
+                                        14</div>
+                                    <div
+                                        style="padding: 1rem 0; border-radius: 8px; background: rgba(255,255,255,0.02); ">
+                                        15</div>
+                                    <div style="padding: 1rem 0; border-radius: 8px; background: rgba(255,255,255,0.05); color: var(--text-muted);"
+                                        title="Weekend">16</div>
+                                    <div style="padding: 1rem 0; border-radius: 8px; background: rgba(255,255,255,0.05); color: var(--text-muted);"
+                                        title="Weekend">17</div>
+                                    <div
+                                        style="padding: 1rem 0; border-radius: 8px; background: rgba(255,255,255,0.02); ">
+                                        18</div>
+                                    <div
+                                        style="padding: 1rem 0; border-radius: 8px; background: rgba(255,255,255,0.02); ">
+                                        19</div>
+                                    <div
+                                        style="padding: 1rem 0; border-radius: 8px; background: rgba(255,255,255,0.02); ">
+                                        20</div>
+                                    <div
+                                        style="padding: 1rem 0; border-radius: 8px; background: rgba(255,255,255,0.02); ">
+                                        21</div>
+                                    <div
+                                        style="padding: 1rem 0; border-radius: 8px; background: rgba(255,255,255,0.02); ">
+                                        22</div>
+                                    <div style="padding: 1rem 0; border-radius: 8px; background: rgba(255,255,255,0.05); color: var(--text-muted);"
+                                        title="Weekend">23</div>
+                                    <div style="padding: 1rem 0; border-radius: 8px; background: rgba(255,255,255,0.05); color: var(--text-muted);"
+                                        title="Weekend">24</div>
+                                    <div
+                                        style="padding: 1rem 0; border-radius: 8px; background: rgba(255,255,255,0.02); ">
+                                        25</div>
+                                    <div
+                                        style="padding: 1rem 0; border-radius: 8px; background: rgba(255,255,255,0.02); ">
+                                        26</div>
+                                    <div
+                                        style="padding: 1rem 0; border-radius: 8px; background: rgba(255,255,255,0.02); ">
+                                        27</div>
+                                    <div
+                                        style="padding: 1rem 0; border-radius: 8px; background: rgba(255,255,255,0.02); ">
+                                        28</div>
+                                </div>
+                            </td>
+                        </tr>
+                        <!-- April -->
+                        <tr onclick="this.nextElementSibling.style.display = this.nextElementSibling.style.display === 'none' ? 'table-row' : 'none'"
+                            style="cursor: pointer; border-bottom: 1px solid rgba(255,255,255,0.05);">
+                            <td style="padding: 1rem; font-weight: 600; color: var(--text-main);">April 2026</td>
+                            <td style="text-align: right; padding: 1rem; color: var(--text-muted);"><i
+                                    class="fa-solid fa-chevron-down"></i></td>
+                        </tr>
+                        <tr style="display: none;">
+                            <td colspan="2" style="padding: 1.5rem 0;">
+                                <div
+                                    style="display: grid; grid-template-columns: repeat(7, 1fr); gap: 0.5rem; text-align: center;">
+                                    <div style="font-weight: 600; color: var(--text-muted); padding-bottom: 0.5rem;">Sun
+                                    </div>
+                                    <div style="font-weight: 600; color: var(--text-muted); padding-bottom: 0.5rem;">Mon
+                                    </div>
+                                    <div style="font-weight: 600; color: var(--text-muted); padding-bottom: 0.5rem;">Tue
+                                    </div>
+                                    <div style="font-weight: 600; color: var(--text-muted); padding-bottom: 0.5rem;">Wed
+                                    </div>
+                                    <div style="font-weight: 600; color: var(--text-muted); padding-bottom: 0.5rem;">Thu
+                                    </div>
+                                    <div style="font-weight: 600; color: var(--text-muted); padding-bottom: 0.5rem;">Fri
+                                    </div>
+                                    <div style="font-weight: 600; color: var(--text-muted); padding-bottom: 0.5rem;">Sat
+                                    </div>
+                                    <div></div>
+                                    <div></div>
+                                    <div></div>
+                                    <div></div>
+                                    <div></div>
+                                    <div></div>
+                                    <div style="padding: 1rem 0; border-radius: 8px; background: rgba(255,255,255,0.05); color: var(--text-muted);"
+                                        title="Weekend">1</div>
+                                    <div style="padding: 1rem 0; border-radius: 8px; background: rgba(255,255,255,0.05); color: var(--text-muted);"
+                                        title="Weekend">2</div>
+                                    <div
+                                        style="padding: 1rem 0; border-radius: 8px; background: rgba(255,255,255,0.02); ">
+                                        3</div>
+                                    <div
+                                        style="padding: 1rem 0; border-radius: 8px; background: rgba(255,255,255,0.02); ">
+                                        4</div>
+                                    <div
+                                        style="padding: 1rem 0; border-radius: 8px; background: rgba(255,255,255,0.02); ">
+                                        5</div>
+                                    <div
+                                        style="padding: 1rem 0; border-radius: 8px; background: rgba(255,255,255,0.02); ">
+                                        6</div>
+                                    <div
+                                        style="padding: 1rem 0; border-radius: 8px; background: rgba(255,255,255,0.02); ">
+                                        7</div>
+                                    <div style="padding: 1rem 0; border-radius: 8px; background: rgba(255,255,255,0.05); color: var(--text-muted);"
+                                        title="Weekend">8</div>
+                                    <div style="padding: 1rem 0; border-radius: 8px; background: rgba(255,255,255,0.05); color: var(--text-muted);"
+                                        title="Weekend">9</div>
+                                    <div
+                                        style="padding: 1rem 0; border-radius: 8px; background: rgba(255,255,255,0.02); ">
+                                        10</div>
+                                    <div
+                                        style="padding: 1rem 0; border-radius: 8px; background: rgba(255,255,255,0.02); ">
+                                        11</div>
+                                    <div
+                                        style="padding: 1rem 0; border-radius: 8px; background: rgba(255,255,255,0.02); ">
+                                        12</div>
+                                    <div
+                                        style="padding: 1rem 0; border-radius: 8px; background: rgba(255,255,255,0.02); ">
+                                        13</div>
+                                    <div
+                                        style="padding: 1rem 0; border-radius: 8px; background: rgba(255,255,255,0.02); ">
+                                        14</div>
+                                    <div style="padding: 1rem 0; border-radius: 8px; background: rgba(255,255,255,0.05); color: var(--text-muted);"
+                                        title="Weekend">15</div>
+                                    <div style="padding: 1rem 0; border-radius: 8px; background: rgba(255,255,255,0.05); color: var(--text-muted);"
+                                        title="Weekend">16</div>
+                                    <div
+                                        style="padding: 1rem 0; border-radius: 8px; background: rgba(255,255,255,0.02); ">
+                                        17</div>
+                                    <div
+                                        style="padding: 1rem 0; border-radius: 8px; background: rgba(255,255,255,0.02); ">
+                                        18</div>
+                                    <div
+                                        style="padding: 1rem 0; border-radius: 8px; background: rgba(255,255,255,0.02); ">
+                                        19</div>
+                                    <div
+                                        style="padding: 1rem 0; border-radius: 8px; background: rgba(255,255,255,0.02); ">
+                                        20</div>
+                                    <div
+                                        style="padding: 1rem 0; border-radius: 8px; background: rgba(255,255,255,0.02); ">
+                                        21</div>
+                                    <div style="padding: 1rem 0; border-radius: 8px; background: rgba(255,255,255,0.05); color: var(--text-muted);"
+                                        title="Weekend">22</div>
+                                    <div style="padding: 1rem 0; border-radius: 8px; background: rgba(255,255,255,0.05); color: var(--text-muted);"
+                                        title="Weekend">23</div>
+                                    <div
+                                        style="padding: 1rem 0; border-radius: 8px; background: rgba(255,255,255,0.02); ">
+                                        24</div>
+                                    <div
+                                        style="padding: 1rem 0; border-radius: 8px; background: rgba(255,255,255,0.02); ">
+                                        25</div>
+                                    <div
+                                        style="padding: 1rem 0; border-radius: 8px; background: rgba(255,255,255,0.02); ">
+                                        26</div>
+                                    <div
+                                        style="padding: 1rem 0; border-radius: 8px; background: rgba(255,255,255,0.02); ">
+                                        27</div>
+                                    <div
+                                        style="padding: 1rem 0; border-radius: 8px; background: rgba(255,255,255,0.02); ">
+                                        28</div>
+                                    <div style="padding: 1rem 0; border-radius: 8px; background: rgba(255,255,255,0.05); color: var(--text-muted);"
+                                        title="Weekend">29</div>
+                                    <div style="padding: 1rem 0; border-radius: 8px; background: rgba(255,255,255,0.05); color: var(--text-muted);"
+                                        title="Weekend">30</div>
+                                </div>
+                            </td>
+                        </tr>
+                        <!-- May -->
+                        <tr onclick="this.nextElementSibling.style.display = this.nextElementSibling.style.display === 'none' ? 'table-row' : 'none'"
+                            style="cursor: pointer; border-bottom: 1px solid rgba(255,255,255,0.05);">
+                            <td style="padding: 1rem; font-weight: 600; color: var(--text-main);">May 2026</td>
+                            <td style="text-align: right; padding: 1rem; color: var(--text-muted);"><i
+                                    class="fa-solid fa-chevron-down"></i></td>
+                        </tr>
+                        <tr style="display: none;">
+                            <td colspan="2" style="padding: 1.5rem 0;">
+                                <div
+                                    style="display: grid; grid-template-columns: repeat(7, 1fr); gap: 0.5rem; text-align: center;">
+                                    <div style="font-weight: 600; color: var(--text-muted); padding-bottom: 0.5rem;">Sun
+                                    </div>
+                                    <div style="font-weight: 600; color: var(--text-muted); padding-bottom: 0.5rem;">Mon
+                                    </div>
+                                    <div style="font-weight: 600; color: var(--text-muted); padding-bottom: 0.5rem;">Tue
+                                    </div>
+                                    <div style="font-weight: 600; color: var(--text-muted); padding-bottom: 0.5rem;">Wed
+                                    </div>
+                                    <div style="font-weight: 600; color: var(--text-muted); padding-bottom: 0.5rem;">Thu
+                                    </div>
+                                    <div style="font-weight: 600; color: var(--text-muted); padding-bottom: 0.5rem;">Fri
+                                    </div>
+                                    <div style="font-weight: 600; color: var(--text-muted); padding-bottom: 0.5rem;">Sat
+                                    </div>
+                                    <div style="padding: 1rem 0; border-radius: 8px; background: rgba(255,255,255,0.05); color: var(--text-muted);"
+                                        title="Weekend">1</div>
+                                    <div
+                                        style="padding: 1rem 0; border-radius: 8px; background: rgba(255,255,255,0.02); ">
+                                        2</div>
+                                    <div
+                                        style="padding: 1rem 0; border-radius: 8px; background: rgba(255,255,255,0.02); ">
+                                        3</div>
+                                    <div
+                                        style="padding: 1rem 0; border-radius: 8px; background: rgba(255,255,255,0.02); ">
+                                        4</div>
+                                    <div
+                                        style="padding: 1rem 0; border-radius: 8px; background: rgba(255,255,255,0.02); ">
+                                        5</div>
+                                    <div
+                                        style="padding: 1rem 0; border-radius: 8px; background: rgba(255,255,255,0.02); ">
+                                        6</div>
+                                    <div style="padding: 1rem 0; border-radius: 8px; background: rgba(255,255,255,0.05); color: var(--text-muted);"
+                                        title="Weekend">7</div>
+                                    <div style="padding: 1rem 0; border-radius: 8px; background: rgba(255,255,255,0.05); color: var(--text-muted);"
+                                        title="Weekend">8</div>
+                                    <div
+                                        style="padding: 1rem 0; border-radius: 8px; background: rgba(255,255,255,0.02); ">
+                                        9</div>
+                                    <div
+                                        style="padding: 1rem 0; border-radius: 8px; background: rgba(255,255,255,0.02); ">
+                                        10</div>
+                                    <div
+                                        style="padding: 1rem 0; border-radius: 8px; background: rgba(255,255,255,0.02); ">
+                                        11</div>
+                                    <div
+                                        style="padding: 1rem 0; border-radius: 8px; background: rgba(255,255,255,0.02); ">
+                                        12</div>
+                                    <div
+                                        style="padding: 1rem 0; border-radius: 8px; background: rgba(255,255,255,0.02); ">
+                                        13</div>
+                                    <div style="padding: 1rem 0; border-radius: 8px; background: rgba(255,255,255,0.05); color: var(--text-muted);"
+                                        title="Weekend">14</div>
+                                    <div style="padding: 1rem 0; border-radius: 8px; background: rgba(255,255,255,0.05); color: var(--text-muted);"
+                                        title="Weekend">15</div>
+                                    <div
+                                        style="padding: 1rem 0; border-radius: 8px; background: rgba(255,255,255,0.02); ">
+                                        16</div>
+                                    <div
+                                        style="padding: 1rem 0; border-radius: 8px; background: rgba(255,255,255,0.02); ">
+                                        17</div>
+                                    <div
+                                        style="padding: 1rem 0; border-radius: 8px; background: rgba(255,255,255,0.02); ">
+                                        18</div>
+                                    <div
+                                        style="padding: 1rem 0; border-radius: 8px; background: rgba(255,255,255,0.02); ">
+                                        19</div>
+                                    <div
+                                        style="padding: 1rem 0; border-radius: 8px; background: rgba(255,255,255,0.02); ">
+                                        20</div>
+                                    <div style="padding: 1rem 0; border-radius: 8px; background: rgba(255,255,255,0.05); color: var(--text-muted);"
+                                        title="Weekend">21</div>
+                                    <div style="padding: 1rem 0; border-radius: 8px; background: rgba(255,255,255,0.05); color: var(--text-muted);"
+                                        title="Weekend">22</div>
+                                    <div
+                                        style="padding: 1rem 0; border-radius: 8px; background: rgba(255,255,255,0.02); ">
+                                        23</div>
+                                    <div
+                                        style="padding: 1rem 0; border-radius: 8px; background: rgba(255,255,255,0.02); ">
+                                        24</div>
+                                    <div
+                                        style="padding: 1rem 0; border-radius: 8px; background: rgba(255,255,255,0.02); ">
+                                        25</div>
+                                    <div
+                                        style="padding: 1rem 0; border-radius: 8px; background: rgba(255,255,255,0.02); ">
+                                        26</div>
+                                    <div
+                                        style="padding: 1rem 0; border-radius: 8px; background: rgba(255,255,255,0.02); ">
+                                        27</div>
+                                    <div style="padding: 1rem 0; border-radius: 8px; background: rgba(255,255,255,0.05); color: var(--text-muted);"
+                                        title="Weekend">28</div>
+                                </div>
+                            </td>
+                        </tr>
+                        <!-- June -->
+                        <tr onclick="this.nextElementSibling.style.display = this.nextElementSibling.style.display === 'none' ? 'table-row' : 'none'"
+                            style="cursor: pointer; border-bottom: 1px solid rgba(255,255,255,0.05);">
+                            <td style="padding: 1rem; font-weight: 600; color: var(--text-main);">June 2026</td>
+                            <td style="text-align: right; padding: 1rem; color: var(--text-muted);"><i
+                                    class="fa-solid fa-chevron-down"></i></td>
+                        </tr>
+                        <tr style="display: none;">
+                            <td colspan="2" style="padding: 1.5rem 0;">
+                                <div
+                                    style="display: grid; grid-template-columns: repeat(7, 1fr); gap: 0.5rem; text-align: center;">
+                                    <div style="font-weight: 600; color: var(--text-muted); padding-bottom: 0.5rem;">Sun
+                                    </div>
+                                    <div style="font-weight: 600; color: var(--text-muted); padding-bottom: 0.5rem;">Mon
+                                    </div>
+                                    <div style="font-weight: 600; color: var(--text-muted); padding-bottom: 0.5rem;">Tue
+                                    </div>
+                                    <div style="font-weight: 600; color: var(--text-muted); padding-bottom: 0.5rem;">Wed
+                                    </div>
+                                    <div style="font-weight: 600; color: var(--text-muted); padding-bottom: 0.5rem;">Thu
+                                    </div>
+                                    <div style="font-weight: 600; color: var(--text-muted); padding-bottom: 0.5rem;">Fri
+                                    </div>
+                                    <div style="font-weight: 600; color: var(--text-muted); padding-bottom: 0.5rem;">Sat
+                                    </div>
+                                    <div></div>
+                                    <div
+                                        style="padding: 1rem 0; border-radius: 8px; background: rgba(255,255,255,0.02); ">
+                                        1</div>
+                                    <div
+                                        style="padding: 1rem 0; border-radius: 8px; background: rgba(255,255,255,0.02); ">
+                                        2</div>
+                                    <div
+                                        style="padding: 1rem 0; border-radius: 8px; background: rgba(255,255,255,0.02); ">
+                                        3</div>
+                                    <div
+                                        style="padding: 1rem 0; border-radius: 8px; background: rgba(255,255,255,0.02); ">
+                                        4</div>
+                                    <div
+                                        style="padding: 1rem 0; border-radius: 8px; background: rgba(255,255,255,0.02); ">
+                                        5</div>
+                                    <div style="padding: 1rem 0; border-radius: 8px; background: rgba(255,255,255,0.05); color: var(--text-muted);"
+                                        title="Weekend">6</div>
+                                    <div style="padding: 1rem 0; border-radius: 8px; background: rgba(255,255,255,0.05); color: var(--text-muted);"
+                                        title="Weekend">7</div>
+                                    <div
+                                        style="padding: 1rem 0; border-radius: 8px; background: rgba(255,255,255,0.02); ">
+                                        8</div>
+                                    <div
+                                        style="padding: 1rem 0; border-radius: 8px; background: rgba(255,255,255,0.02); ">
+                                        9</div>
+                                    <div
+                                        style="padding: 1rem 0; border-radius: 8px; background: rgba(255,255,255,0.02); ">
+                                        10</div>
+                                    <div
+                                        style="padding: 1rem 0; border-radius: 8px; background: rgba(255,255,255,0.02); ">
+                                        11</div>
+                                    <div
+                                        style="padding: 1rem 0; border-radius: 8px; background: rgba(255,255,255,0.02); ">
+                                        12</div>
+                                    <div style="padding: 1rem 0; border-radius: 8px; background: rgba(255,255,255,0.05); color: var(--text-muted);"
+                                        title="Weekend">13</div>
+                                    <div style="padding: 1rem 0; border-radius: 8px; background: rgba(255,255,255,0.05); color: var(--text-muted);"
+                                        title="Weekend">14</div>
+                                    <div
+                                        style="padding: 1rem 0; border-radius: 8px; background: rgba(255,255,255,0.02); ">
+                                        15</div>
+                                    <div
+                                        style="padding: 1rem 0; border-radius: 8px; background: rgba(255,255,255,0.02); ">
+                                        16</div>
+                                    <div
+                                        style="padding: 1rem 0; border-radius: 8px; background: rgba(255,255,255,0.02); ">
+                                        17</div>
+                                    <div
+                                        style="padding: 1rem 0; border-radius: 8px; background: rgba(255,255,255,0.02); ">
+                                        18</div>
+                                    <div
+                                        style="padding: 1rem 0; border-radius: 8px; background: rgba(255,255,255,0.02); ">
+                                        19</div>
+                                    <div style="padding: 1rem 0; border-radius: 8px; background: rgba(255,255,255,0.05); color: var(--text-muted);"
+                                        title="Weekend">20</div>
+                                    <div style="padding: 1rem 0; border-radius: 8px; background: rgba(255,255,255,0.05); color: var(--text-muted);"
+                                        title="Weekend">21</div>
+                                    <div
+                                        style="padding: 1rem 0; border-radius: 8px; background: rgba(255,255,255,0.02); ">
+                                        22</div>
+                                    <div
+                                        style="padding: 1rem 0; border-radius: 8px; background: rgba(255,255,255,0.02); ">
+                                        23</div>
+                                    <div
+                                        style="padding: 1rem 0; border-radius: 8px; background: rgba(255,255,255,0.02); ">
+                                        24</div>
+                                    <div
+                                        style="padding: 1rem 0; border-radius: 8px; background: rgba(255,255,255,0.02); ">
+                                        25</div>
+                                    <div
+                                        style="padding: 1rem 0; border-radius: 8px; background: rgba(255,255,255,0.02); ">
+                                        26</div>
+                                    <div style="padding: 1rem 0; border-radius: 8px; background: rgba(255,255,255,0.05); color: var(--text-muted);"
+                                        title="Weekend">27</div>
+                                    <div style="padding: 1rem 0; border-radius: 8px; background: rgba(255,255,255,0.05); color: var(--text-muted);"
+                                        title="Weekend">28</div>
+                                    <div
+                                        style="padding: 1rem 0; border-radius: 8px; background: rgba(255,255,255,0.02); ">
+                                        29</div>
+                                    <div
+                                        style="padding: 1rem 0; border-radius: 8px; background: rgba(255,255,255,0.02); ">
+                                        30</div>
+                                </div>
+                            </td>
+                        </tr>
+                        <!-- July -->
+                        <tr onclick="this.nextElementSibling.style.display = this.nextElementSibling.style.display === 'none' ? 'table-row' : 'none'"
+                            style="cursor: pointer; border-bottom: 1px solid rgba(255,255,255,0.05);">
+                            <td style="padding: 1rem; font-weight: 600; color: var(--text-main);">July 2026</td>
+                            <td style="text-align: right; padding: 1rem; color: var(--text-muted);"><i
+                                    class="fa-solid fa-chevron-down"></i></td>
+                        </tr>
+                        <tr style="display: none;">
+                            <td colspan="2" style="padding: 1.5rem 0;">
+                                <div
+                                    style="display: grid; grid-template-columns: repeat(7, 1fr); gap: 0.5rem; text-align: center;">
+                                    <div style="font-weight: 600; color: var(--text-muted); padding-bottom: 0.5rem;">Sun
+                                    </div>
+                                    <div style="font-weight: 600; color: var(--text-muted); padding-bottom: 0.5rem;">Mon
+                                    </div>
+                                    <div style="font-weight: 600; color: var(--text-muted); padding-bottom: 0.5rem;">Tue
+                                    </div>
+                                    <div style="font-weight: 600; color: var(--text-muted); padding-bottom: 0.5rem;">Wed
+                                    </div>
+                                    <div style="font-weight: 600; color: var(--text-muted); padding-bottom: 0.5rem;">Thu
+                                    </div>
+                                    <div style="font-weight: 600; color: var(--text-muted); padding-bottom: 0.5rem;">Fri
+                                    </div>
+                                    <div style="font-weight: 600; color: var(--text-muted); padding-bottom: 0.5rem;">Sat
+                                    </div>
+                                    <div></div>
+                                    <div></div>
+                                    <div
+                                        style="padding: 1rem 0; border-radius: 8px; background: rgba(255,255,255,0.02); ">
+                                        1</div>
+                                    <div
+                                        style="padding: 1rem 0; border-radius: 8px; background: rgba(255,255,255,0.02); ">
+                                        2</div>
+                                    <div
+                                        style="padding: 1rem 0; border-radius: 8px; background: rgba(255,255,255,0.02); ">
+                                        3</div>
+                                    <div
+                                        style="padding: 1rem 0; border-radius: 8px; background: rgba(255,255,255,0.02); ">
+                                        4</div>
+                                    <div style="padding: 1rem 0; border-radius: 8px; background: rgba(255,255,255,0.05); color: var(--text-muted);"
+                                        title="Weekend">5</div>
+                                    <div style="padding: 1rem 0; border-radius: 8px; background: rgba(255,255,255,0.05); color: var(--text-muted);"
+                                        title="Weekend">6</div>
+                                    <div
+                                        style="padding: 1rem 0; border-radius: 8px; background: rgba(255,255,255,0.02); ">
+                                        7</div>
+                                    <div
+                                        style="padding: 1rem 0; border-radius: 8px; background: rgba(255,255,255,0.02); ">
+                                        8</div>
+                                    <div
+                                        style="padding: 1rem 0; border-radius: 8px; background: rgba(255,255,255,0.02); ">
+                                        9</div>
+                                    <div
+                                        style="padding: 1rem 0; border-radius: 8px; background: rgba(255,255,255,0.02); ">
+                                        10</div>
+                                    <div
+                                        style="padding: 1rem 0; border-radius: 8px; background: rgba(255,255,255,0.02); ">
+                                        11</div>
+                                    <div style="padding: 1rem 0; border-radius: 8px; background: rgba(255,255,255,0.05); color: var(--text-muted);"
+                                        title="Weekend">12</div>
+                                    <div style="padding: 1rem 0; border-radius: 8px; background: rgba(255,255,255,0.05); color: var(--text-muted);"
+                                        title="Weekend">13</div>
+                                    <div
+                                        style="padding: 1rem 0; border-radius: 8px; background: rgba(255,255,255,0.02); ">
+                                        14</div>
+                                    <div
+                                        style="padding: 1rem 0; border-radius: 8px; background: rgba(255,255,255,0.02); ">
+                                        15</div>
+                                    <div
+                                        style="padding: 1rem 0; border-radius: 8px; background: rgba(255,255,255,0.02); ">
+                                        16</div>
+                                    <div
+                                        style="padding: 1rem 0; border-radius: 8px; background: rgba(255,255,255,0.02); ">
+                                        17</div>
+                                    <div
+                                        style="padding: 1rem 0; border-radius: 8px; background: rgba(255,255,255,0.02); ">
+                                        18</div>
+                                    <div style="padding: 1rem 0; border-radius: 8px; background: rgba(255,255,255,0.05); color: var(--text-muted);"
+                                        title="Weekend">19</div>
+                                    <div style="padding: 1rem 0; border-radius: 8px; background: rgba(255,255,255,0.05); color: var(--text-muted);"
+                                        title="Weekend">20</div>
+                                    <div
+                                        style="padding: 1rem 0; border-radius: 8px; background: rgba(255,255,255,0.02); ">
+                                        21</div>
+                                    <div
+                                        style="padding: 1rem 0; border-radius: 8px; background: rgba(255,255,255,0.02); ">
+                                        22</div>
+                                    <div
+                                        style="padding: 1rem 0; border-radius: 8px; background: rgba(255,255,255,0.02); ">
+                                        23</div>
+                                    <div
+                                        style="padding: 1rem 0; border-radius: 8px; background: rgba(255,255,255,0.02); ">
+                                        24</div>
+                                    <div
+                                        style="padding: 1rem 0; border-radius: 8px; background: rgba(255,255,255,0.02); ">
+                                        25</div>
+                                    <div style="padding: 1rem 0; border-radius: 8px; background: rgba(255,255,255,0.05); color: var(--text-muted);"
+                                        title="Weekend">26</div>
+                                    <div style="padding: 1rem 0; border-radius: 8px; background: rgba(255,255,255,0.05); color: var(--text-muted);"
+                                        title="Weekend">27</div>
+                                    <div
+                                        style="padding: 1rem 0; border-radius: 8px; background: rgba(255,255,255,0.02); ">
+                                        28</div>
+                                </div>
+                            </td>
+                        </tr>
+                        <!-- August -->
+                        <tr onclick="this.nextElementSibling.style.display = this.nextElementSibling.style.display === 'none' ? 'table-row' : 'none'"
+                            style="cursor: pointer; border-bottom: 1px solid rgba(255,255,255,0.05);">
+                            <td style="padding: 1rem; font-weight: 600; color: var(--text-main);">August 2026</td>
+                            <td style="text-align: right; padding: 1rem; color: var(--text-muted);"><i
+                                    class="fa-solid fa-chevron-down"></i></td>
+                        </tr>
+                        <tr style="display: none;">
+                            <td colspan="2" style="padding: 1.5rem 0;">
+                                <div
+                                    style="display: grid; grid-template-columns: repeat(7, 1fr); gap: 0.5rem; text-align: center;">
+                                    <div style="font-weight: 600; color: var(--text-muted); padding-bottom: 0.5rem;">Sun
+                                    </div>
+                                    <div style="font-weight: 600; color: var(--text-muted); padding-bottom: 0.5rem;">Mon
+                                    </div>
+                                    <div style="font-weight: 600; color: var(--text-muted); padding-bottom: 0.5rem;">Tue
+                                    </div>
+                                    <div style="font-weight: 600; color: var(--text-muted); padding-bottom: 0.5rem;">Wed
+                                    </div>
+                                    <div style="font-weight: 600; color: var(--text-muted); padding-bottom: 0.5rem;">Thu
+                                    </div>
+                                    <div style="font-weight: 600; color: var(--text-muted); padding-bottom: 0.5rem;">Fri
+                                    </div>
+                                    <div style="font-weight: 600; color: var(--text-muted); padding-bottom: 0.5rem;">Sat
+                                    </div>
+                                    <div></div>
+                                    <div></div>
+                                    <div></div>
+                                    <div
+                                        style="padding: 1rem 0; border-radius: 8px; background: rgba(255,255,255,0.02); ">
+                                        1</div>
+                                    <div
+                                        style="padding: 1rem 0; border-radius: 8px; background: rgba(255,255,255,0.02); ">
+                                        2</div>
+                                    <div
+                                        style="padding: 1rem 0; border-radius: 8px; background: rgba(255,255,255,0.02); ">
+                                        3</div>
+                                    <div style="padding: 1rem 0; border-radius: 8px; background: rgba(255,255,255,0.05); color: var(--text-muted);"
+                                        title="Weekend">4</div>
+                                    <div style="padding: 1rem 0; border-radius: 8px; background: rgba(255,255,255,0.05); color: var(--text-muted);"
+                                        title="Weekend">5</div>
+                                    <div
+                                        style="padding: 1rem 0; border-radius: 8px; background: rgba(255,255,255,0.02); ">
+                                        6</div>
+                                    <div
+                                        style="padding: 1rem 0; border-radius: 8px; background: rgba(255,255,255,0.02); ">
+                                        7</div>
+                                    <div
+                                        style="padding: 1rem 0; border-radius: 8px; background: rgba(255,255,255,0.02); ">
+                                        8</div>
+                                    <div
+                                        style="padding: 1rem 0; border-radius: 8px; background: rgba(255,255,255,0.02); ">
+                                        9</div>
+                                    <div
+                                        style="padding: 1rem 0; border-radius: 8px; background: rgba(255,255,255,0.02); ">
+                                        10</div>
+                                    <div style="padding: 1rem 0; border-radius: 8px; background: rgba(255,255,255,0.05); color: var(--text-muted);"
+                                        title="Weekend">11</div>
+                                    <div style="padding: 1rem 0; border-radius: 8px; background: rgba(255,255,255,0.05); color: var(--text-muted);"
+                                        title="Weekend">12</div>
+                                    <div
+                                        style="padding: 1rem 0; border-radius: 8px; background: rgba(255,255,255,0.02); ">
+                                        13</div>
+                                    <div
+                                        style="padding: 1rem 0; border-radius: 8px; background: rgba(255,255,255,0.02); ">
+                                        14</div>
+                                    <div
+                                        style="padding: 1rem 0; border-radius: 8px; background: rgba(255,255,255,0.02); ">
+                                        15</div>
+                                    <div
+                                        style="padding: 1rem 0; border-radius: 8px; background: rgba(255,255,255,0.02); ">
+                                        16</div>
+                                    <div
+                                        style="padding: 1rem 0; border-radius: 8px; background: rgba(255,255,255,0.02); ">
+                                        17</div>
+                                    <div style="padding: 1rem 0; border-radius: 8px; background: rgba(255,255,255,0.05); color: var(--text-muted);"
+                                        title="Weekend">18</div>
+                                    <div style="padding: 1rem 0; border-radius: 8px; background: rgba(255,255,255,0.05); color: var(--text-muted);"
+                                        title="Weekend">19</div>
+                                    <div
+                                        style="padding: 1rem 0; border-radius: 8px; background: rgba(255,255,255,0.02); ">
+                                        20</div>
+                                    <div
+                                        style="padding: 1rem 0; border-radius: 8px; background: rgba(255,255,255,0.02); ">
+                                        21</div>
+                                    <div
+                                        style="padding: 1rem 0; border-radius: 8px; background: rgba(255,255,255,0.02); ">
+                                        22</div>
+                                    <div
+                                        style="padding: 1rem 0; border-radius: 8px; background: rgba(255,255,255,0.02); ">
+                                        23</div>
+                                    <div
+                                        style="padding: 1rem 0; border-radius: 8px; background: rgba(255,255,255,0.02); ">
+                                        24</div>
+                                    <div style="padding: 1rem 0; border-radius: 8px; background: rgba(255,255,255,0.05); color: var(--text-muted);"
+                                        title="Weekend">25</div>
+                                    <div style="padding: 1rem 0; border-radius: 8px; background: rgba(255,255,255,0.05); color: var(--text-muted);"
+                                        title="Weekend">26</div>
+                                    <div
+                                        style="padding: 1rem 0; border-radius: 8px; background: rgba(255,255,255,0.02); ">
+                                        27</div>
+                                    <div
+                                        style="padding: 1rem 0; border-radius: 8px; background: rgba(255,255,255,0.02); ">
+                                        28</div>
+                                    <div
+                                        style="padding: 1rem 0; border-radius: 8px; background: rgba(255,255,255,0.02); ">
+                                        29</div>
+                                    <div
+                                        style="padding: 1rem 0; border-radius: 8px; background: rgba(255,255,255,0.02); ">
+                                        30</div>
+                                </div>
+                            </td>
+                        </tr>
+                        <!-- September -->
+                        <tr onclick="this.nextElementSibling.style.display = this.nextElementSibling.style.display === 'none' ? 'table-row' : 'none'"
+                            style="cursor: pointer; border-bottom: 1px solid rgba(255,255,255,0.05);">
+                            <td style="padding: 1rem; font-weight: 600; color: var(--text-main);">September 2026</td>
+                            <td style="text-align: right; padding: 1rem; color: var(--text-muted);"><i
+                                    class="fa-solid fa-chevron-down"></i></td>
+                        </tr>
+                        <tr style="display: none;">
+                            <td colspan="2" style="padding: 1.5rem 0;">
+                                <div
+                                    style="display: grid; grid-template-columns: repeat(7, 1fr); gap: 0.5rem; text-align: center;">
+                                    <div style="font-weight: 600; color: var(--text-muted); padding-bottom: 0.5rem;">Sun
+                                    </div>
+                                    <div style="font-weight: 600; color: var(--text-muted); padding-bottom: 0.5rem;">Mon
+                                    </div>
+                                    <div style="font-weight: 600; color: var(--text-muted); padding-bottom: 0.5rem;">Tue
+                                    </div>
+                                    <div style="font-weight: 600; color: var(--text-muted); padding-bottom: 0.5rem;">Wed
+                                    </div>
+                                    <div style="font-weight: 600; color: var(--text-muted); padding-bottom: 0.5rem;">Thu
+                                    </div>
+                                    <div style="font-weight: 600; color: var(--text-muted); padding-bottom: 0.5rem;">Fri
+                                    </div>
+                                    <div style="font-weight: 600; color: var(--text-muted); padding-bottom: 0.5rem;">Sat
+                                    </div>
+                                    <div></div>
+                                    <div></div>
+                                    <div></div>
+                                    <div></div>
+                                    <div
+                                        style="padding: 1rem 0; border-radius: 8px; background: rgba(255,255,255,0.02); ">
+                                        1</div>
+                                    <div
+                                        style="padding: 1rem 0; border-radius: 8px; background: rgba(255,255,255,0.02); ">
+                                        2</div>
+                                    <div style="padding: 1rem 0; border-radius: 8px; background: rgba(255,255,255,0.05); color: var(--text-muted);"
+                                        title="Weekend">3</div>
+                                    <div style="padding: 1rem 0; border-radius: 8px; background: rgba(255,255,255,0.05); color: var(--text-muted);"
+                                        title="Weekend">4</div>
+                                    <div
+                                        style="padding: 1rem 0; border-radius: 8px; background: rgba(255,255,255,0.02); ">
+                                        5</div>
+                                    <div
+                                        style="padding: 1rem 0; border-radius: 8px; background: rgba(255,255,255,0.02); ">
+                                        6</div>
+                                    <div
+                                        style="padding: 1rem 0; border-radius: 8px; background: rgba(255,255,255,0.02); ">
+                                        7</div>
+                                    <div
+                                        style="padding: 1rem 0; border-radius: 8px; background: rgba(255,255,255,0.02); ">
+                                        8</div>
+                                    <div
+                                        style="padding: 1rem 0; border-radius: 8px; background: rgba(255,255,255,0.02); ">
+                                        9</div>
+                                    <div style="padding: 1rem 0; border-radius: 8px; background: rgba(255,255,255,0.05); color: var(--text-muted);"
+                                        title="Weekend">10</div>
+                                    <div style="padding: 1rem 0; border-radius: 8px; background: rgba(255,255,255,0.05); color: var(--text-muted);"
+                                        title="Weekend">11</div>
+                                    <div
+                                        style="padding: 1rem 0; border-radius: 8px; background: rgba(255,255,255,0.02); ">
+                                        12</div>
+                                    <div
+                                        style="padding: 1rem 0; border-radius: 8px; background: rgba(255,255,255,0.02); ">
+                                        13</div>
+                                    <div
+                                        style="padding: 1rem 0; border-radius: 8px; background: rgba(255,255,255,0.02); ">
+                                        14</div>
+                                    <div
+                                        style="padding: 1rem 0; border-radius: 8px; background: rgba(255,255,255,0.02); ">
+                                        15</div>
+                                    <div
+                                        style="padding: 1rem 0; border-radius: 8px; background: rgba(255,255,255,0.02); ">
+                                        16</div>
+                                    <div style="padding: 1rem 0; border-radius: 8px; background: rgba(255,255,255,0.05); color: var(--text-muted);"
+                                        title="Weekend">17</div>
+                                    <div style="padding: 1rem 0; border-radius: 8px; background: rgba(255,255,255,0.05); color: var(--text-muted);"
+                                        title="Weekend">18</div>
+                                    <div
+                                        style="padding: 1rem 0; border-radius: 8px; background: rgba(255,255,255,0.02); ">
+                                        19</div>
+                                    <div
+                                        style="padding: 1rem 0; border-radius: 8px; background: rgba(255,255,255,0.02); ">
+                                        20</div>
+                                    <div
+                                        style="padding: 1rem 0; border-radius: 8px; background: rgba(255,255,255,0.02); ">
+                                        21</div>
+                                    <div
+                                        style="padding: 1rem 0; border-radius: 8px; background: rgba(255,255,255,0.02); ">
+                                        22</div>
+                                    <div
+                                        style="padding: 1rem 0; border-radius: 8px; background: rgba(255,255,255,0.02); ">
+                                        23</div>
+                                    <div style="padding: 1rem 0; border-radius: 8px; background: rgba(255,255,255,0.05); color: var(--text-muted);"
+                                        title="Weekend">24</div>
+                                    <div style="padding: 1rem 0; border-radius: 8px; background: rgba(255,255,255,0.05); color: var(--text-muted);"
+                                        title="Weekend">25</div>
+                                    <div
+                                        style="padding: 1rem 0; border-radius: 8px; background: rgba(255,255,255,0.02); ">
+                                        26</div>
+                                    <div
+                                        style="padding: 1rem 0; border-radius: 8px; background: rgba(255,255,255,0.02); ">
+                                        27</div>
+                                    <div
+                                        style="padding: 1rem 0; border-radius: 8px; background: rgba(255,255,255,0.02); ">
+                                        28</div>
+                                </div>
+                            </td>
+                        </tr>
+                        <!-- October -->
+                        <tr onclick="this.nextElementSibling.style.display = this.nextElementSibling.style.display === 'none' ? 'table-row' : 'none'"
+                            style="cursor: pointer; border-bottom: 1px solid rgba(255,255,255,0.05);">
+                            <td style="padding: 1rem; font-weight: 600; color: var(--text-main);">October 2026</td>
+                            <td style="text-align: right; padding: 1rem; color: var(--text-muted);"><i
+                                    class="fa-solid fa-chevron-down"></i></td>
+                        </tr>
+                        <tr style="display: none;">
+                            <td colspan="2" style="padding: 1.5rem 0;">
+                                <div
+                                    style="display: grid; grid-template-columns: repeat(7, 1fr); gap: 0.5rem; text-align: center;">
+                                    <div style="font-weight: 600; color: var(--text-muted); padding-bottom: 0.5rem;">Sun
+                                    </div>
+                                    <div style="font-weight: 600; color: var(--text-muted); padding-bottom: 0.5rem;">Mon
+                                    </div>
+                                    <div style="font-weight: 600; color: var(--text-muted); padding-bottom: 0.5rem;">Tue
+                                    </div>
+                                    <div style="font-weight: 600; color: var(--text-muted); padding-bottom: 0.5rem;">Wed
+                                    </div>
+                                    <div style="font-weight: 600; color: var(--text-muted); padding-bottom: 0.5rem;">Thu
+                                    </div>
+                                    <div style="font-weight: 600; color: var(--text-muted); padding-bottom: 0.5rem;">Fri
+                                    </div>
+                                    <div style="font-weight: 600; color: var(--text-muted); padding-bottom: 0.5rem;">Sat
+                                    </div>
+                                    <div></div>
+                                    <div></div>
+                                    <div></div>
+                                    <div></div>
+                                    <div></div>
+                                    <div
+                                        style="padding: 1rem 0; border-radius: 8px; background: rgba(255,255,255,0.02); ">
+                                        1</div>
+                                    <div style="padding: 1rem 0; border-radius: 8px; background: rgba(255,255,255,0.05); color: var(--text-muted);"
+                                        title="Weekend">2</div>
+                                    <div style="padding: 1rem 0; border-radius: 8px; background: rgba(255,255,255,0.05); color: var(--text-muted);"
+                                        title="Weekend">3</div>
+                                    <div
+                                        style="padding: 1rem 0; border-radius: 8px; background: rgba(255,255,255,0.02); ">
+                                        4</div>
+                                    <div
+                                        style="padding: 1rem 0; border-radius: 8px; background: rgba(255,255,255,0.02); ">
+                                        5</div>
+                                    <div
+                                        style="padding: 1rem 0; border-radius: 8px; background: rgba(255,255,255,0.02); ">
+                                        6</div>
+                                    <div
+                                        style="padding: 1rem 0; border-radius: 8px; background: rgba(255,255,255,0.02); ">
+                                        7</div>
+                                    <div
+                                        style="padding: 1rem 0; border-radius: 8px; background: rgba(255,255,255,0.02); ">
+                                        8</div>
+                                    <div style="padding: 1rem 0; border-radius: 8px; background: rgba(255,255,255,0.05); color: var(--text-muted);"
+                                        title="Weekend">9</div>
+                                    <div style="padding: 1rem 0; border-radius: 8px; background: rgba(245,158,11,0.2); color: #f59e0b; font-weight:bold;"
+                                        title="Leave">10</div>
+                                    <div
+                                        style="padding: 1rem 0; border-radius: 8px; background: rgba(255,255,255,0.02); ">
+                                        11</div>
+                                    <div style="padding: 1rem 0; border-radius: 8px; background: rgba(16,185,129,0.2); color: #10b981; font-weight:bold;"
+                                        title="Holiday">12</div>
+                                    <div
+                                        style="padding: 1rem 0; border-radius: 8px; background: rgba(255,255,255,0.02); ">
+                                        13</div>
+                                    <div
+                                        style="padding: 1rem 0; border-radius: 8px; background: rgba(255,255,255,0.02); ">
+                                        14</div>
+                                    <div
+                                        style="padding: 1rem 0; border-radius: 8px; background: rgba(255,255,255,0.02); ">
+                                        15</div>
+                                    <div style="padding: 1rem 0; border-radius: 8px; background: rgba(255,255,255,0.05); color: var(--text-muted);"
+                                        title="Weekend">16</div>
+                                    <div style="padding: 1rem 0; border-radius: 8px; background: rgba(255,255,255,0.05); color: var(--text-muted);"
+                                        title="Weekend">17</div>
+                                    <div
+                                        style="padding: 1rem 0; border-radius: 8px; background: rgba(255,255,255,0.02); ">
+                                        18</div>
+                                    <div
+                                        style="padding: 1rem 0; border-radius: 8px; background: rgba(255,255,255,0.02); ">
+                                        19</div>
+                                    <div
+                                        style="padding: 1rem 0; border-radius: 8px; background: rgba(255,255,255,0.02); ">
+                                        20</div>
+                                    <div
+                                        style="padding: 1rem 0; border-radius: 8px; background: rgba(255,255,255,0.02); ">
+                                        21</div>
+                                    <div
+                                        style="padding: 1rem 0; border-radius: 8px; background: rgba(255,255,255,0.02); ">
+                                        22</div>
+                                    <div style="padding: 1rem 0; border-radius: 8px; background: rgba(245,158,11,0.2); color: #f59e0b; font-weight:bold;"
+                                        title="Leave">23</div>
+                                    <div style="padding: 1rem 0; border-radius: 8px; background: rgba(245,158,11,0.2); color: #f59e0b; font-weight:bold;"
+                                        title="Leave">24</div>
+                                    <div
+                                        style="padding: 1rem 0; border-radius: 8px; background: rgba(255,255,255,0.02); ">
+                                        25</div>
+                                    <div
+                                        style="padding: 1rem 0; border-radius: 8px; background: rgba(255,255,255,0.02); ">
+                                        26</div>
+                                    <div
+                                        style="padding: 1rem 0; border-radius: 8px; background: rgba(255,255,255,0.02); ">
+                                        27</div>
+                                    <div
+                                        style="padding: 1rem 0; border-radius: 8px; background: rgba(255,255,255,0.02); ">
+                                        28</div>
+                                    <div
+                                        style="padding: 1rem 0; border-radius: 8px; background: rgba(255,255,255,0.02); ">
+                                        29</div>
+                                    <div style="padding: 1rem 0; border-radius: 8px; background: rgba(255,255,255,0.05); color: var(--text-muted);"
+                                        title="Weekend">30</div>
+                                </div>
+                            </td>
+                        </tr>
+                        <!-- November -->
+                        <tr onclick="this.nextElementSibling.style.display = this.nextElementSibling.style.display === 'none' ? 'table-row' : 'none'"
+                            style="cursor: pointer; border-bottom: 1px solid rgba(255,255,255,0.05);">
+                            <td style="padding: 1rem; font-weight: 600; color: var(--text-main);">November 2026</td>
+                            <td style="text-align: right; padding: 1rem; color: var(--text-muted);"><i
+                                    class="fa-solid fa-chevron-down"></i></td>
+                        </tr>
+                        <tr style="display: none;">
+                            <td colspan="2" style="padding: 1.5rem 0;">
+                                <div
+                                    style="display: grid; grid-template-columns: repeat(7, 1fr); gap: 0.5rem; text-align: center;">
+                                    <div style="font-weight: 600; color: var(--text-muted); padding-bottom: 0.5rem;">Sun
+                                    </div>
+                                    <div style="font-weight: 600; color: var(--text-muted); padding-bottom: 0.5rem;">Mon
+                                    </div>
+                                    <div style="font-weight: 600; color: var(--text-muted); padding-bottom: 0.5rem;">Tue
+                                    </div>
+                                    <div style="font-weight: 600; color: var(--text-muted); padding-bottom: 0.5rem;">Wed
+                                    </div>
+                                    <div style="font-weight: 600; color: var(--text-muted); padding-bottom: 0.5rem;">Thu
+                                    </div>
+                                    <div style="font-weight: 600; color: var(--text-muted); padding-bottom: 0.5rem;">Fri
+                                    </div>
+                                    <div style="font-weight: 600; color: var(--text-muted); padding-bottom: 0.5rem;">Sat
+                                    </div>
+                                    <div></div>
+                                    <div></div>
+                                    <div></div>
+                                    <div></div>
+                                    <div></div>
+                                    <div></div>
+                                    <div style="padding: 1rem 0; border-radius: 8px; background: rgba(255,255,255,0.05); color: var(--text-muted);"
+                                        title="Weekend">1</div>
+                                    <div style="padding: 1rem 0; border-radius: 8px; background: rgba(255,255,255,0.05); color: var(--text-muted);"
+                                        title="Weekend">2</div>
+                                    <div
+                                        style="padding: 1rem 0; border-radius: 8px; background: rgba(255,255,255,0.02); ">
+                                        3</div>
+                                    <div
+                                        style="padding: 1rem 0; border-radius: 8px; background: rgba(255,255,255,0.02); ">
+                                        4</div>
+                                    <div
+                                        style="padding: 1rem 0; border-radius: 8px; background: rgba(255,255,255,0.02); ">
+                                        5</div>
+                                    <div
+                                        style="padding: 1rem 0; border-radius: 8px; background: rgba(255,255,255,0.02); ">
+                                        6</div>
+                                    <div
+                                        style="padding: 1rem 0; border-radius: 8px; background: rgba(255,255,255,0.02); ">
+                                        7</div>
+                                    <div style="padding: 1rem 0; border-radius: 8px; background: rgba(255,255,255,0.05); color: var(--text-muted);"
+                                        title="Weekend">8</div>
+                                    <div style="padding: 1rem 0; border-radius: 8px; background: rgba(255,255,255,0.05); color: var(--text-muted);"
+                                        title="Weekend">9</div>
+                                    <div
+                                        style="padding: 1rem 0; border-radius: 8px; background: rgba(255,255,255,0.02); ">
+                                        10</div>
+                                    <div
+                                        style="padding: 1rem 0; border-radius: 8px; background: rgba(255,255,255,0.02); ">
+                                        11</div>
+                                    <div
+                                        style="padding: 1rem 0; border-radius: 8px; background: rgba(255,255,255,0.02); ">
+                                        12</div>
+                                    <div
+                                        style="padding: 1rem 0; border-radius: 8px; background: rgba(255,255,255,0.02); ">
+                                        13</div>
+                                    <div
+                                        style="padding: 1rem 0; border-radius: 8px; background: rgba(255,255,255,0.02); ">
+                                        14</div>
+                                    <div style="padding: 1rem 0; border-radius: 8px; background: rgba(255,255,255,0.05); color: var(--text-muted);"
+                                        title="Weekend">15</div>
+                                    <div style="padding: 1rem 0; border-radius: 8px; background: rgba(255,255,255,0.05); color: var(--text-muted);"
+                                        title="Weekend">16</div>
+                                    <div
+                                        style="padding: 1rem 0; border-radius: 8px; background: rgba(255,255,255,0.02); ">
+                                        17</div>
+                                    <div
+                                        style="padding: 1rem 0; border-radius: 8px; background: rgba(255,255,255,0.02); ">
+                                        18</div>
+                                    <div
+                                        style="padding: 1rem 0; border-radius: 8px; background: rgba(255,255,255,0.02); ">
+                                        19</div>
+                                    <div
+                                        style="padding: 1rem 0; border-radius: 8px; background: rgba(255,255,255,0.02); ">
+                                        20</div>
+                                    <div
+                                        style="padding: 1rem 0; border-radius: 8px; background: rgba(255,255,255,0.02); ">
+                                        21</div>
+                                    <div style="padding: 1rem 0; border-radius: 8px; background: rgba(255,255,255,0.05); color: var(--text-muted);"
+                                        title="Weekend">22</div>
+                                    <div style="padding: 1rem 0; border-radius: 8px; background: rgba(255,255,255,0.05); color: var(--text-muted);"
+                                        title="Weekend">23</div>
+                                    <div
+                                        style="padding: 1rem 0; border-radius: 8px; background: rgba(255,255,255,0.02); ">
+                                        24</div>
+                                    <div
+                                        style="padding: 1rem 0; border-radius: 8px; background: rgba(255,255,255,0.02); ">
+                                        25</div>
+                                    <div
+                                        style="padding: 1rem 0; border-radius: 8px; background: rgba(255,255,255,0.02); ">
+                                        26</div>
+                                    <div
+                                        style="padding: 1rem 0; border-radius: 8px; background: rgba(255,255,255,0.02); ">
+                                        27</div>
+                                    <div
+                                        style="padding: 1rem 0; border-radius: 8px; background: rgba(255,255,255,0.02); ">
+                                        28</div>
+                                </div>
+                            </td>
+                        </tr>
+                        <!-- December -->
+                        <tr onclick="this.nextElementSibling.style.display = this.nextElementSibling.style.display === 'none' ? 'table-row' : 'none'"
+                            style="cursor: pointer; border-bottom: 1px solid rgba(255,255,255,0.05);">
+                            <td style="padding: 1rem; font-weight: 600; color: var(--text-main);">December 2026</td>
+                            <td style="text-align: right; padding: 1rem; color: var(--text-muted);"><i
+                                    class="fa-solid fa-chevron-down"></i></td>
+                        </tr>
+                        <tr style="display: none;">
+                            <td colspan="2" style="padding: 1.5rem 0;">
+                                <div
+                                    style="display: grid; grid-template-columns: repeat(7, 1fr); gap: 0.5rem; text-align: center;">
+                                    <div style="font-weight: 600; color: var(--text-muted); padding-bottom: 0.5rem;">Sun
+                                    </div>
+                                    <div style="font-weight: 600; color: var(--text-muted); padding-bottom: 0.5rem;">Mon
+                                    </div>
+                                    <div style="font-weight: 600; color: var(--text-muted); padding-bottom: 0.5rem;">Tue
+                                    </div>
+                                    <div style="font-weight: 600; color: var(--text-muted); padding-bottom: 0.5rem;">Wed
+                                    </div>
+                                    <div style="font-weight: 600; color: var(--text-muted); padding-bottom: 0.5rem;">Thu
+                                    </div>
+                                    <div style="font-weight: 600; color: var(--text-muted); padding-bottom: 0.5rem;">Fri
+                                    </div>
+                                    <div style="font-weight: 600; color: var(--text-muted); padding-bottom: 0.5rem;">Sat
+                                    </div>
+                                    <div style="padding: 1rem 0; border-radius: 8px; background: rgba(255,255,255,0.05); color: var(--text-muted);"
+                                        title="Weekend">1</div>
+                                    <div
+                                        style="padding: 1rem 0; border-radius: 8px; background: rgba(255,255,255,0.02); ">
+                                        2</div>
+                                    <div
+                                        style="padding: 1rem 0; border-radius: 8px; background: rgba(255,255,255,0.02); ">
+                                        3</div>
+                                    <div
+                                        style="padding: 1rem 0; border-radius: 8px; background: rgba(255,255,255,0.02); ">
+                                        4</div>
+                                    <div
+                                        style="padding: 1rem 0; border-radius: 8px; background: rgba(255,255,255,0.02); ">
+                                        5</div>
+                                    <div
+                                        style="padding: 1rem 0; border-radius: 8px; background: rgba(255,255,255,0.02); ">
+                                        6</div>
+                                    <div style="padding: 1rem 0; border-radius: 8px; background: rgba(255,255,255,0.05); color: var(--text-muted);"
+                                        title="Weekend">7</div>
+                                    <div style="padding: 1rem 0; border-radius: 8px; background: rgba(255,255,255,0.05); color: var(--text-muted);"
+                                        title="Weekend">8</div>
+                                    <div
+                                        style="padding: 1rem 0; border-radius: 8px; background: rgba(255,255,255,0.02); ">
+                                        9</div>
+                                    <div
+                                        style="padding: 1rem 0; border-radius: 8px; background: rgba(255,255,255,0.02); ">
+                                        10</div>
+                                    <div
+                                        style="padding: 1rem 0; border-radius: 8px; background: rgba(255,255,255,0.02); ">
+                                        11</div>
+                                    <div
+                                        style="padding: 1rem 0; border-radius: 8px; background: rgba(255,255,255,0.02); ">
+                                        12</div>
+                                    <div
+                                        style="padding: 1rem 0; border-radius: 8px; background: rgba(255,255,255,0.02); ">
+                                        13</div>
+                                    <div style="padding: 1rem 0; border-radius: 8px; background: rgba(255,255,255,0.05); color: var(--text-muted);"
+                                        title="Weekend">14</div>
+                                    <div style="padding: 1rem 0; border-radius: 8px; background: rgba(255,255,255,0.05); color: var(--text-muted);"
+                                        title="Weekend">15</div>
+                                    <div
+                                        style="padding: 1rem 0; border-radius: 8px; background: rgba(255,255,255,0.02); ">
+                                        16</div>
+                                    <div
+                                        style="padding: 1rem 0; border-radius: 8px; background: rgba(255,255,255,0.02); ">
+                                        17</div>
+                                    <div
+                                        style="padding: 1rem 0; border-radius: 8px; background: rgba(255,255,255,0.02); ">
+                                        18</div>
+                                    <div
+                                        style="padding: 1rem 0; border-radius: 8px; background: rgba(255,255,255,0.02); ">
+                                        19</div>
+                                    <div
+                                        style="padding: 1rem 0; border-radius: 8px; background: rgba(255,255,255,0.02); ">
+                                        20</div>
+                                    <div style="padding: 1rem 0; border-radius: 8px; background: rgba(255,255,255,0.05); color: var(--text-muted);"
+                                        title="Weekend">21</div>
+                                    <div style="padding: 1rem 0; border-radius: 8px; background: rgba(255,255,255,0.05); color: var(--text-muted);"
+                                        title="Weekend">22</div>
+                                    <div
+                                        style="padding: 1rem 0; border-radius: 8px; background: rgba(255,255,255,0.02); ">
+                                        23</div>
+                                    <div
+                                        style="padding: 1rem 0; border-radius: 8px; background: rgba(255,255,255,0.02); ">
+                                        24</div>
+                                    <div
+                                        style="padding: 1rem 0; border-radius: 8px; background: rgba(255,255,255,0.02); ">
+                                        25</div>
+                                    <div
+                                        style="padding: 1rem 0; border-radius: 8px; background: rgba(255,255,255,0.02); ">
+                                        26</div>
+                                    <div
+                                        style="padding: 1rem 0; border-radius: 8px; background: rgba(255,255,255,0.02); ">
+                                        27</div>
+                                    <div style="padding: 1rem 0; border-radius: 8px; background: rgba(255,255,255,0.05); color: var(--text-muted);"
+                                        title="Weekend">28</div>
+                                    <div style="padding: 1rem 0; border-radius: 8px; background: rgba(255,255,255,0.05); color: var(--text-muted);"
+                                        title="Weekend">29</div>
+                                    <div
+                                        style="padding: 1rem 0; border-radius: 8px; background: rgba(255,255,255,0.02); ">
+                                        30</div>
+                                </div>
+                            </td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+
+            <div class="manager-only table-container">
+                <table>
+                    <thead>
+                        <tr>
+                            <th>Employee</th>
+                            <th>Type</th>
+                            <th>Duration</th>
+                            <th>Action</th>
+                        </tr>
+                    </thead>
+                    <tbody id="teamLeavesList">
+                        <!-- Populated dynamically -->
+                    </tbody>
+                </table>
+            </div>
+            <div class="self-only" style="display:none;">
+                <div style="margin-bottom: 2rem;">
+                    <button class="btn btn-primary" style="padding: 0.5rem 1rem;"
+                        onclick="document.getElementById('manager-leave-form').style.display='block'">Apply
+                        Leave</button>
+                </div>
+                <div id="manager-leave-form" class="glass-panel"
+                    style="display:none; margin-bottom: 2rem; padding: 1.5rem;">
+                    <h4 style="margin-bottom: 1rem;">Submit Leave Request</h4>
+                    <form id="applyLeaveForm" style="display: flex; gap: 1rem; align-items: flex-end; flex-wrap: wrap;">
+                        <div class="form-group" style="flex: 1; min-width: 150px; margin-bottom: 0;">
+                            <label>Leave Type</label>
+                            <select id="leaveType" class="form-control" required
+                                style="width:100%; padding:0.75rem; border-radius:8px; border:1px solid var(--glass-border); background:var(--bg-navy); color:#fff;">
+                                <option value="Sick">Sick</option>
+                                <option value="Casual">Casual</option>
+                                <option value="Vacation">Vacation</option>
+                            </select>
+                        </div>
+                        <div class="form-group" style="flex: 1; min-width: 150px; margin-bottom: 0;">
+                            <label>Start Date</label>
+                            <input type="date" id="leaveStart" class="form-control" required
+                                style="width:100%; padding:0.75rem; border-radius:8px; border:1px solid var(--glass-border); background:var(--bg-navy); color:#fff;">
+                        </div>
+                        <div class="form-group" style="flex: 1; min-width: 150px; margin-bottom: 0;">
+                            <label>End Date</label>
+                            <input type="date" id="leaveEnd" class="form-control" required
+                                style="width:100%; padding:0.75rem; border-radius:8px; border:1px solid var(--glass-border); background:var(--bg-navy); color:#fff;">
+                        </div>
+                        <div class="form-group" style="flex: 2; min-width: 250px; margin-bottom: 0;">
+                            <label>Reason</label>
+                            <input type="text" id="leaveReason" class="form-control" required
+                                style="width:100%; padding:0.75rem; border-radius:8px; border:1px solid var(--glass-border); background:var(--bg-navy); color:#fff;"
+                                placeholder="Brief reason">
+                        </div>
+                        <button type="submit" class="btn btn-primary" style="padding: 0.75rem 1.5rem;">Submit</button>
+                        <button type="button" class="btn btn-ghost" style="padding: 0.75rem 1.5rem;"
+                            onclick="document.getElementById('manager-leave-form').style.display='none'">Cancel</button>
+                    </form>
+                </div>
+            </div>
+        </section>
+
+        <!-- View: Tasks -->
+        <section id="tasks" class="view-section">
+            <!-- Manager Mode Tasks -->
+            <div class="manager-only">
+                <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 2rem;">
+                    <h2 class="gradient-text">Team Tasks</h2>
+                </div>
+
+                <div id="manager-task-form" class="glass-panel" style="margin-bottom: 2rem; padding: 1.5rem;">
+                    <h4 style="margin-bottom: 1rem;">Assign New Task</h4>
+                    <form id="assignTaskForm" style="display: flex; flex-direction: column; gap: 1.5rem;">
+                        <input type="hidden" id="taskId">
+                        <div style="display: flex; gap: 1rem; flex-wrap: wrap;">
+                            <div class="form-group" style="flex: 2; min-width: 200px; margin-bottom: 0;">
+                                <label>Task Title</label>
+                                <input type="text" id="taskTitle" class="form-control" required
+                                    style="width:80%; padding:0.75rem; border-radius:8px; border:1px solid var(--glass-border); background:var(--bg-navy); color:#fff;"
+                                    placeholder="e.g. Q4 Financial Audit">
+                            </div>
+                            <div class="form-group" style="flex: 2; min-width: 200px; margin-bottom: 0;">
+                                <label>Employee Email</label>
+                                <input type="email" id="taskEmail" class="form-control" required
+                                    style="width:80%; padding:0.75rem; border-radius:8px; border:1px solid var(--glass-border); background:var(--bg-navy); color:#fff;"
+                                    placeholder="employee@shnoor.com">
+                            </div>
+                            <div class="form-group" style="flex: 1; min-width: 150px; margin-bottom: 0;">
+                                <label>Deadline</label>
+                                <input type="date" id="taskDeadline" class="form-control" required
+                                    style="width:80%; padding:0.75rem; border-radius:8px; border:1px solid var(--glass-border); background:var(--bg-navy); color:#fff;">
+                            </div>
+                            <div class="form-group" style="flex: 1; min-width: 150px; margin-bottom: 0;">
+                                <label>Priority</label>
+                                <select id="taskPriority" class="form-control" required
+                                    style="width:80%; padding:0.75rem; border-radius:8px; border:1px solid var(--glass-border); background:var(--bg-navy); color:#fff;">
+                                    <option value="Low">Low</option>
+                                    <option value="Medium" selected>Medium</option>
+                                    <option value="High">High</option>
+                                </select>
+                            </div>
+                            <div class="form-group" style="width: 100%;">
+                                <label>Description</label>
+                                <textarea id="taskDescription" class="form-control"
+                                    style="width:80%; padding:0.75rem; border-radius:8px; border:1px solid var(--glass-border); background:var(--bg-navy); color:#fff; min-height: 80px;"
+                                    placeholder="Detailed instructions..."></textarea>
+                            </div>
+                            <div style="display: flex; gap: 1rem;">
+                                <button type="submit" id="taskSubmitBtn" class="btn btn-primary"
+                                    style="padding: 0.75rem 1.5rem;">Assign Task</button>
+                                <button type="button" class="btn btn-ghost" style="padding: 0.75rem 1.5rem;"
+                                    onclick="cancelTaskEdit()">Cancel</button>
+                            </div>
+                    </form>
+                </div>
+
+
+                <div class="table-container"
+                    style="width: 100%; max-width: 100%; background: transparent; border: none; box-shadow: none; margin-top: 1rem;">
+                    <table
+                        style="width: 100%; border-collapse: separate; border-spacing: 0 5px; font-size: 0.85rem; table-layout: auto;">
+                        <thead>
+                            <tr>
+                                <th style="padding: 0.75rem; text-align: left; width: 12%;">Title</th>
+                                <th style="padding: 0.75rem; text-align: left; width: 20%;">Description</th>
+                                <th style="padding: 0.75rem; text-align: left; width: 15%;">Assigned To</th>
+                                <th style="padding: 0.75rem; text-align: left; width: 10%;">Deadline</th>
+                                <th style="padding: 0.75rem; text-align: left; width: 8%;">Priority</th>
+                                <th style="padding: 0.75rem; text-align: left; width: 10%;">Status</th>
+                                <th style="padding: 0.75rem; text-align: left; width: 15%;">Employee Note</th>
+                                <th style="padding: 0.75rem; text-align: left; width: 10%;">Actions</th>
+                            </tr>
+                        </thead>
+                        <tbody id="teamTasksList">
+                            <!-- Populated by JS -->
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+
+            <!-- Self Mode Tasks -->
+            <div class="self-only" style="display: none;">
+                <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 2rem;">
+                    <h2 class="gradient-text">My Tasks</h2>
+                </div>
+                <div class="table-container">
+                    <table>
+                        <thead>
+                            <tr>
+                                <th>Title</th>
+                                <th>Deadline</th>
+                                <th>Priority</th>
+                                <th>Status</th>
+                            </tr>
+                        </thead>
+                        <tbody id="selfTasksList">
+                            <!-- from JS -->
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </section>
+
+        <!-- View: Documents (Self Only) -->
+        <section id="documents" class="view-section self-only">
+            <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 2rem;">
+                <h2 class="gradient-text">My Documents</h2>
+                <button class="btn btn-primary" style="padding: 0.5rem 1rem;"
+                    onclick="document.getElementById('upload-doc-form').style.display='block'">Upload Document</button>
+            </div>
+
+            <div id="upload-doc-form" class="glass-panel" style="display:none; margin-bottom: 2rem; padding: 1.5rem;">
+                <h4 style="margin-bottom: 1rem;">Upload New Document</h4>
+                <form id="docUploadForm" style="display: flex; gap: 1rem; align-items: flex-end; flex-wrap: wrap;">
+                    <div class="form-group" style="flex: 1; min-width: 200px; margin-bottom: 0;">
+                        <label>Document Title</label>
+                        <input type="text" id="docTitle" class="form-control" required
+                            style="width:100%; padding:0.75rem; border-radius:8px; border:1px solid var(--glass-border); background:var(--bg-navy); color:#fff;"
+                            placeholder="e.g. Q3 Report">
+                    </div>
+                    <div class="form-group" style="flex: 1; min-width: 150px; margin-bottom: 0;">
+                        <label>File</label>
+                        <input type="file" id="docFile" class="form-control" required
+                            style="width:100%; padding:0.75rem; border-radius:8px; border:1px solid var(--glass-border); background:var(--bg-navy); color:#fff;">
+                    </div>
+                    <button type="submit" class="btn btn-primary" style="padding: 0.75rem 1.5rem;">Upload</button>
+                    <button type="button" class="btn btn-ghost" style="padding: 0.75rem 1.5rem;"
+                        onclick="document.getElementById('upload-doc-form').style.display='none'">Cancel</button>
+                </form>
+            </div>
+
+            <div class="table-container">
+                <table>
+                    <thead>
+                        <tr>
+                            <th>Title</th>
+                            <th>Uploaded On</th>
+                            <th>Action</th>
+                        </tr>
+                    </thead>
+                    <tbody id="documentsList">
+                        <!-- Populated by JS -->
+                    </tbody>
+                </table>
+            </div>
+        </section>
+
+        <!-- View: Payroll (Manager Only) -->
+        <section id="payroll" class="view-section manager-only">
+            <h2 class="gradient-text" style="margin-bottom: 2rem;">Team Payroll</h2>
+            <div class="table-container">
+                <table>
+                    <thead>
+                        <tr>
+                            <th>Employee</th>
+                            <th>Month</th>
+                            <th>Salary</th>
+                            <th>Status</th>
+                        </tr>
+                    </thead>
+                    <tbody id="teamPayrollList">
+                        <!-- Populated by JS -->
+                    </tbody>
+                </table>
+            </div>
+        </section>
+
+        <!-- View: Policies (Manager Only) -->
+        <section id="policies" class="view-section manager-only">
+            <h2 class="gradient-text" style="margin-bottom: 2rem;">Manage Company Policies</h2>
+
+            <div class="glass-panel" style="padding: 1.5rem; margin-bottom: 2rem;">
+                <h4 style="margin-bottom: 1rem;">Add New Policy</h4>
+                <div style="display: flex; gap: 1rem; align-items: flex-start;">
+                    <input type="text" placeholder="Policy Title"
+                        style="flex:1; padding:0.75rem; border-radius:8px; border:1px solid var(--glass-border); background:var(--bg-navy); color:#fff;" />
+                    <input type="text" placeholder="Short Description / Link"
+                        style="flex:2; padding:0.75rem; border-radius:8px; border:1px solid var(--glass-border); background:var(--bg-navy); color:#fff;" />
+                    <button class="btn btn-primary" style="padding: 0.75rem 1.5rem;">Add Policy</button>
+                </div>
+            </div>
+
+            <div class="table-container">
+                <table>
+                    <thead>
+                        <tr>
+                            <th>Policy</th>
+                            <th>Description</th>
+                            <th>Action</th>
+                        </tr>
+                    </thead>
+                    <tbody id="policiesList">
+                        <!-- Populated by JS -->
+                    </tbody>
+                </table>
+            </div>
+        </section>
+
+        <!-- View: Profile (Self Only) -->
+        <section id="profile" class="view-section self-only">
+            <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 2rem;">
+                <h2 class="gradient-text">My Profile</h2>
+            </div>
+            <form id="profileUpdateForm">
+                <div class="glass-panel" style="padding: 2rem; margin-bottom: 2rem;">
+                    <h3 style="margin-bottom: 1.5rem; color: var(--text-main); font-weight: 500;">Personal Details</h3>
+                    <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 1.5rem;">
+                        <div class="form-group">
+                            <label>First Name</label>
+                            <input type="text" id="prof-fname" class="form-control"
+                                style="width:100%; padding:0.75rem; border-radius:8px; border:1px solid var(--glass-border); background:var(--bg-navy); color:#fff;"
+                                required>
+                        </div>
+                        <div class="form-group">
+                            <label>Last Name</label>
+                            <input type="text" id="prof-lname" class="form-control"
+                                style="width:100%; padding:0.75rem; border-radius:8px; border:1px solid var(--glass-border); background:var(--bg-navy); color:#fff;"
+                                required>
+                        </div>
+                        <div class="form-group">
+                            <label>Email Address</label>
+                            <input type="email" id="prof-email" class="form-control"
+                                style="width:100%; padding:0.75rem; border-radius:8px; border:1px solid var(--glass-border); background:var(--bg-navy); color:#fff;"
+                                required>
+                        </div>
+                        <div class="form-group">
+                            <label>Phone Number</label>
+                            <input type="text" id="prof-phone" class="form-control"
+                                style="width:100%; padding:0.75rem; border-radius:8px; border:1px solid var(--glass-border); background:var(--bg-navy); color:#fff;">
+                        </div>
+                        <div class="form-group">
+                            <label>Gender</label>
+                            <select id="prof-gender" class="form-control"
+                                style="width:100%; padding:0.75rem; border-radius:8px; border:1px solid var(--glass-border); background:var(--bg-navy); color:#fff;">
+                                <option value="">Select Gender</option>
+                                <option value="Male">Male</option>
+                                <option value="Female">Female</option>
+                                <option value="Other">Other</option>
+                            </select>
+                        </div>
+                        <div class="form-group">
+                            <label>Date of Birth</label>
+                            <input type="date" id="prof-dob" class="form-control"
+                                style="width:100%; padding:0.75rem; border-radius:8px; border:1px solid var(--glass-border); background:var(--bg-navy); color:#fff;">
+                        </div>
+                        <div class="form-group" style="grid-column: 1 / -1;">
+                            <label>Address</label>
+                            <input type="text" id="prof-address" class="form-control"
+                                style="width:100%; padding:0.75rem; border-radius:8px; border:1px solid var(--glass-border); background:var(--bg-navy); color:#fff;">
+                        </div>
+                        
+                        <!-- Added Fields -->
+                        <div class="form-group">
+                            <label>Aadhaar Number</label>
+                            <input type="text" id="prof-aadhaar" class="form-control"
+                                style="width:100%; padding:0.75rem; border-radius:8px; border:1px solid var(--glass-border); background:var(--bg-navy); color:#fff;">
+                        </div>
+                        <div class="form-group">
+                            <label>PAN Number</label>
+                            <input type="text" id="prof-pan" class="form-control"
+                                style="width:100%; padding:0.75rem; border-radius:8px; border:1px solid var(--glass-border); background:var(--bg-navy); color:#fff;">
+                        </div>
+                        <div class="form-group">
+                            <label>Marital Status</label>
+                            <select id="prof-marital" class="form-control"
+                                style="width:100%; padding:0.75rem; border-radius:8px; border:1px solid var(--glass-border); background:var(--bg-navy); color:#fff;">
+                                <option value="">Select...</option>
+                                <option value="Single">Single</option>
+                                <option value="Married">Married</option>
+                                <option value="Divorced">Divorced</option>
+                                <option value="Widowed">Widowed</option>
+                            </select>
+                        </div>
+                        <div class="form-group">
+                            <label>Nationality</label>
+                            <input type="text" id="prof-nationality" class="form-control"
+                                style="width:100%; padding:0.75rem; border-radius:8px; border:1px solid var(--glass-border); background:var(--bg-navy); color:#fff;">
+                        </div>
+                        <div class="form-group">
+                            <label>Blood Group</label>
+                            <input type="text" id="prof-blood" class="form-control"
+                                style="width:100%; padding:0.75rem; border-radius:8px; border:1px solid var(--glass-border); background:var(--bg-navy); color:#fff;">
+                        </div>
+                        <div class="form-group">
+                            <label>Permanent Address</label>
+                            <input type="text" id="prof-perm-address" class="form-control"
+                                style="width:100%; padding:0.75rem; border-radius:8px; border:1px solid var(--glass-border); background:var(--bg-navy); color:#fff;">
+                        </div>
+                        
+                        <div style="grid-column: 1 / -1; margin-top: 1rem;">
+                            <h4 style="color:var(--primary); font-weight: 500;">Emergency Contact</h4>
+                        </div>
+                        <div class="form-group">
+                            <label>Contact Name</label>
+                            <input type="text" id="prof-emg-name" class="form-control"
+                                style="width:100%; padding:0.75rem; border-radius:8px; border:1px solid var(--glass-border); background:var(--bg-navy); color:#fff;">
+                        </div>
+                        <div class="form-group">
+                            <label>Contact Phone</label>
+                            <input type="text" id="prof-emg-phone" class="form-control"
+                                style="width:100%; padding:0.75rem; border-radius:8px; border:1px solid var(--glass-border); background:var(--bg-navy); color:#fff;">
+                        </div>
+                        <div class="form-group">
+                            <label>Relation</label>
+                            <input type="text" id="prof-emg-relation" class="form-control"
+                                style="width:100%; padding:0.75rem; border-radius:8px; border:1px solid var(--glass-border); background:var(--bg-navy); color:#fff;">
+                        </div>
+                    </div>
+                </div>
+
+                <div class="glass-panel" style="padding: 2rem; margin-bottom: 2rem;">
+                    <h3 style="margin-bottom: 1.5rem; color: var(--text-main); font-weight: 500;">Professional Details
+                    </h3>
+                    <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 1.5rem;">
+                        <div class="form-group">
+                            <label>Employee ID</label>
+                            <input type="text" id="prof-empid" class="form-control"
+                                style="width:100%; padding:0.75rem; border-radius:8px; border:1px solid var(--glass-border); background:var(--bg-navy); color:#fff;">
+                        </div>
+                        <div class="form-group">
+                            <label>Joining Date</label>
+                            <input type="date" id="prof-joining" class="form-control"
+                                style="width:100%; padding:0.75rem; border-radius:8px; border:1px solid var(--glass-border); background:var(--bg-navy); color:#fff;">
+                        </div>
+                        <div class="form-group">
+                            <label>Designation</label>
+                            <input type="text" id="prof-designation" class="form-control"
+                                style="width:100%; padding:0.75rem; border-radius:8px; border:1px solid var(--glass-border); background:var(--bg-navy); color:#fff;">
+                        </div>
+                        <div class="form-group">
+                            <label>Department</label>
+                            <input type="text" id="prof-department" class="form-control"
+                                style="width:100%; padding:0.75rem; border-radius:8px; border:1px solid var(--glass-border); background:var(--bg-navy); color:#fff;">
+                        </div>
+                    </div>
+                </div>
+
+                <div class="glass-panel" style="padding: 2rem; margin-bottom: 2rem;">
+                    <h3 style="margin-bottom: 1.5rem; color: var(--text-main); font-weight: 500;">Bank Details</h3>
+                    <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 1.5rem;">
+                        <div class="form-group">
+                            <label>Bank Name</label>
+                            <input type="text" id="prof-bankname" class="form-control"
+                                style="width:100%; padding:0.75rem; border-radius:8px; border:1px solid var(--glass-border); background:var(--bg-navy); color:#fff;">
+                        </div>
+                        <div class="form-group">
+                            <label>Account Number</label>
+                            <input type="text" id="prof-account" class="form-control"
+                                style="width:100%; padding:0.75rem; border-radius:8px; border:1px solid var(--glass-border); background:var(--bg-navy); color:#fff;">
+                        </div>
+                        <div class="form-group">
+                            <label>IFSC Code</label>
+                            <input type="text" id="prof-ifsc" class="form-control"
+                                style="width:100%; padding:0.75rem; border-radius:8px; border:1px solid var(--glass-border); background:var(--bg-navy); color:#fff;">
+                        </div>
+                        <div class="form-group">
+                            <label>Branch</label>
+                            <input type="text" id="prof-branch" class="form-control"
+                                style="width:100%; padding:0.75rem; border-radius:8px; border:1px solid var(--glass-border); background:var(--bg-navy); color:#fff;">
+                        </div>
+                    </div>
+                </div>
+
+                <div style="text-align: right; margin-bottom: 3rem;">
+                    <button type="submit" class="btn btn-primary" style="padding: 0.75rem 2rem;">Save All
+                        Changes</button>
+                </div>
+            </form>
+        </section>
+
+        <!-- View: Manage Profiles (Manager Only) -->
+        <section id="manage-profiles-section" class="view-section manager-only">
+            <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 2rem;">
+                <h2 class="gradient-text" style="margin: 0;">Team Member Profiles</h2>
+                <button id="exportProfilesBtn" class="btn btn-primary" style="padding: 0.75rem 1.5rem; display: flex; align-items: center; gap: 0.5rem;">
+                    <i class="fa-solid fa-file-excel"></i> Export to Excel
+                </button>
+            </div>
+            
+            <div class="glass-panel" style="padding: 1.5rem; margin-bottom: 2rem;">
+                <div style="display: flex; gap: 1rem; margin-bottom: 1rem;">
+                    <input type="text" id="memberSearch" placeholder="Search by name or email..." 
+                        style="flex: 1; padding: 0.75rem; border-radius: 8px; border: 1px solid var(--glass-border); background: var(--bg-navy); color: #fff;">
+                </div>
+                
+                <div class="table-container" style="max-height: 600px; overflow-y: auto;">
+                    <table>
+                        <thead>
+                            <tr>
+                                <th>Name</th>
+                                <th>Designation</th>
+                                <th>Department</th>
+                                <th>Email</th>
+                                <th>Action</th>
+                            </tr>
+                        </thead>
+                        <tbody id="memberProfilesList">
+                            <!-- Populated by JS -->
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+            
+            <!-- Modal for Detailed View -->
+            <div id="memberProfileModal" class="glass-panel" style="display:none; position:fixed; top:50%; left:50%; transform:translate(-50%, -50%); width:90%; max-width:800px; max-height:90vh; overflow-y:auto; z-index:1000; padding:2rem; border:1px solid var(--primary); box-shadow: 0 0 50px rgba(0,0,0,0.8);">
+                <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 2rem;">
+                    <h3 class="gradient-text">Member Profile Details</h3>
+                    <button class="btn btn-ghost" onclick="document.getElementById('memberProfileModal').style.display='none'" style="font-size: 1.5rem;">&times;</button>
+                </div>
+                <div id="modalProfileContent" style="display: grid; grid-template-columns: 1fr 1fr; gap: 2rem;">
+                    <!-- Populated by JS -->
+                </div>
+            </div>
+        </section>
+
+        <!-- View: Org Chart -->
+        <section id="orgchart" class="view-section">
+            <h2 class="gradient-text" style="margin-bottom: 2rem;">Organization Chart</h2>
+
+            <div class="glass-panel manager-only" style="margin-bottom: 2rem; padding: 1.5rem;">
+                <h4 style="margin-bottom: 1rem;">Add Node to Org Chart</h4>
+                <form id="addOrgNodeForm"
+                    style="display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 1rem; align-items: flex-end;">
+                    <div class="form-group">
+                        <label>Name</label>
+                        <input type="text" id="nodeName" class="form-control" required
+                            style="width:100%; padding:0.75rem; border-radius:8px; border:1px solid var(--glass-border); background:var(--bg-navy); color:#fff;">
+                    </div>
+                    <div class="form-group">
+                        <label>Role</label>
+                        <input type="text" id="nodeRole" class="form-control" required
+                            style="width:100%; padding:0.75rem; border-radius:8px; border:1px solid var(--glass-border); background:var(--bg-navy); color:#fff;">
+                    </div>
+                    <div class="form-group">
+                        <label>Department</label>
+                        <input type="text" id="nodeDept" class="form-control" required
+                            style="width:100%; padding:0.75rem; border-radius:8px; border:1px solid var(--glass-border); background:var(--bg-navy); color:#fff;">
+                    </div>
+                    <div class="form-group">
+                        <label>Company</label>
+                        <input type="text" id="nodeCompany" class="form-control" required
+                            style="width:100%; padding:0.75rem; border-radius:8px; border:1px solid var(--glass-border); background:var(--bg-navy); color:#fff;">
+                    </div>
+                    <div class="form-group">
+                        <label>Employee Months</label>
+                        <input type="number" id="nodeMonths" class="form-control" required
+                            style="width:100%; padding:0.75rem; border-radius:8px; border:1px solid var(--glass-border); background:var(--bg-navy); color:#fff;">
+                    </div>
+                    <div class="form-group">
+                        <label>Work Mode</label>
+                        <select id="nodeWorkMode" class="form-control"
+                            style="width:100%; padding:0.75rem; border-radius:8px; border:1px solid var(--glass-border); background:var(--bg-navy); color:#fff;">
+                            <option value="onsite">Onsite</option>
+                            <option value="hybrid">Hybrid</option>
+                            <option value="remote" selected>Remote</option>
+                        </select>
+                    </div>
+                    <div class="form-group">
+                        <label>Reports To (Manager ID)</label>
+                        <input type="number" id="nodeManager" class="form-control"
+                            style="width:100%; padding:0.75rem; border-radius:8px; border:1px solid var(--glass-border); background:var(--bg-navy); color:#fff;"
+                            placeholder="Leave empty for Top Level">
+                    </div>
+                    <button type="submit" class="btn btn-primary" style="padding: 0.75rem 1.5rem;">Add Node</button>
+                </form>
+            </div>
+
+            <div class="org-chart-container">
+                <div id="orgChartTree" class="tree">
+                    <!-- Recursive Tree Structure will be injected here -->
+                </div>
+            </div>
+        </section>
+
+        <!-- View: Notifications -->
+        <section id="notifications" class="view-section">
+            <h2 class="gradient-text" style="margin-bottom: 2rem;">Notifications & Announcements</h2>
+
+            <!-- Received from Admin -->
+            <div class="glass-panel" style="margin-bottom: 2rem; padding: 1.5rem;">
+                <h4 style="margin-bottom: 1rem; color: var(--primary);"><i class="fa-solid fa-bullhorn"></i> Admin
+                    Announcements</h4>
+                <div class="table-container">
+                    <table>
+                        <thead>
+                            <tr>
+                                <th>Date</th>
+                                <th>Title</th>
+                                <th>Message</th>
+                                <th>From</th>
+                            </tr>
+                        </thead>
+                        <tbody id="receivedNotificationsList">
+                            <!-- Populated by JS -->
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+
+            <!-- Send to Employees (Manager Only) -->
+            <div class="manager-only">
+                <div class="glass-panel" style="margin-bottom: 2rem; padding: 1.5rem;">
+                    <h4 style="margin-bottom: 1rem;">Send Announcement to Employees</h4>
+                    <form id="sendNotificationForm" style="display: flex; flex-direction: column; gap: 1rem;">
+                        <div class="form-group" style="margin-bottom: 0;">
+                            <label>Title</label>
+                            <input type="text" id="notifTitle" class="form-control" required
+                                style="width:100%; padding:0.75rem; border-radius:8px; border:1px solid var(--glass-border); background:var(--bg-navy); color:#fff;"
+                                placeholder="Announcement Title">
+                        </div>
+                        <div class="form-group" style="margin-bottom: 0;">
+                            <label>Message</label>
+                            <textarea id="notifMessage" class="form-control" required
+                                style="width:100%; padding:0.75rem; border-radius:8px; border:1px solid var(--glass-border); background:var(--bg-navy); color:#fff; min-height: 100px;"
+                                placeholder="Type your message here..."></textarea>
+                        </div>
+                        <button type="submit" class="btn btn-primary"
+                            style="padding: 0.75rem 1.5rem; width: fit-content;">Send Announcement</button>
+                    </form>
+                </div>
+
+                <h4 style="margin-bottom: 1rem; color: var(--text-main);">Sent Announcements</h4>
+                <div class="table-container">
+                    <table>
+                        <thead>
+                            <tr>
+                                <th>Date</th>
+                                <th>Title</th>
+                                <th>Message</th>
+                            </tr>
+                        </thead>
+                        <tbody id="sentNotificationsList">
+                            <!-- Populated by JS -->
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </section>
+
+    </main>
+
+    <script src="manager.js?v=9"></script>
+</body>
+
+</html>
