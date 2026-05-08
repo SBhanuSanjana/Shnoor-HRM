@@ -109,7 +109,7 @@ function initNavigation() {
                 'dashboard': 'Dashboard Overview',
                 'team-members': 'Team Member Profiles',
                 'attendance': 'Team Attendance Log',
-                'tasks': 'Team Tasks & Delegation',
+                'tasks': 'Team Tasks & Assignment',
                 'performance': 'Team Performance Metrics',
                 'notifications': 'Notifications & Broadcasts',
                 'profile': 'My Personal Profile'
@@ -704,4 +704,161 @@ function setupEventListeners() {
     document.getElementById('logoutBtn').addEventListener('click', () => {
         localStorage.removeItem('token');
     });
+}
+
+function escapeXML(str) {
+    if (!str) return '';
+    return String(str)
+        .replace(/&/g, '&amp;')
+        .replace(/</g, '&lt;')
+        .replace(/>/g, '&gt;')
+        .replace(/"/g, '&quot;')
+        .replace(/'/g, '&apos;');
+}
+
+function exportTeamToExcel() {
+    if (!teamMembersList || teamMembersList.length === 0) {
+        alert("No team members to export. Please load the section first.");
+        return;
+    }
+
+    const headers = [
+        "Employee ID", "Full Name", "Email", "Phone", "Gender", "Date of Birth", 
+        "Present Address", "Permanent Address", "Aadhaar Number", "PAN Number", 
+        "Marital Status", "Nationality", "Blood Group", "Designation", "Department", 
+        "Joining Date", "Emergency Contact Name", "Emergency Contact Phone", "Emergency Contact Relation"
+    ];
+
+    const rows = teamMembersList.map(p => [
+        p.employee_id || '',
+        `${p.first_name || ''} ${p.last_name || ''}`.trim(),
+        p.email || '',
+        p.phone_number || '',
+        p.gender || '',
+        p.date_of_birth || '',
+        p.address || '',
+        p.permanent_address || '',
+        p.aadhaar_number || '',
+        p.pan_number || '',
+        p.marital_status || '',
+        p.nationality || '',
+        p.blood_group || '',
+        p.designation || '',
+        p.department || '',
+        p.date_of_joining || '',
+        p.emergency_contact_name || '',
+        p.emergency_contact_phone || '',
+        p.emergency_contact_relation || ''
+    ]);
+
+    // Calculate dynamic column widths (auto-fit columns based on content length)
+    const colWidths = headers.map((header, i) => {
+        let maxLen = header.length;
+        rows.forEach(row => {
+            const valStr = String(row[i] || '');
+            if (valStr.length > maxLen) maxLen = valStr.length;
+        });
+        return Math.max(110, (maxLen * 8.5) + 20);
+    });
+
+    // Generate XML Spreadsheet 2003 content
+    let xml = `<?xml version="1.0"?>
+<?mso-application progid="Excel.Sheet"?>
+<Workbook xmlns="urn:schemas-microsoft-com:office:spreadsheet"
+ xmlns:o="urn:schemas-microsoft-com:office:office"
+ xmlns:x="urn:schemas-microsoft-com:office:excel"
+ xmlns:ss="urn:schemas-microsoft-com:office:spreadsheet"
+ xmlns:html="http://www.w3.org/TR/REC-html40">
+ <Styles>
+  <Style ss:ID="Default" ss:Name="Normal">
+   <Alignment ss:Vertical="Center"/>
+   <Borders/>
+   <Font ss:FontName="Calibri" ss:Size="11" ss:Color="#000000"/>
+   <Interior/>
+   <NumberFormat/>
+   <Protection/>
+  </Style>
+  <Style ss:ID="MainTitle">
+   <Font ss:FontName="Calibri" ss:Size="16" ss:Bold="1" ss:Color="#FFFFFF"/>
+   <Alignment ss:Horizontal="Center" ss:Vertical="Center"/>
+   <Interior ss:Color="#1B365D" ss:Pattern="Solid"/>
+  </Style>
+  <Style ss:ID="SubTitle">
+   <Font ss:FontName="Calibri" ss:Size="11" ss:Italic="1" ss:Color="#FFFFFF"/>
+   <Alignment ss:Horizontal="Center" ss:Vertical="Center"/>
+   <Interior ss:Color="#2E5B9A" ss:Pattern="Solid"/>
+  </Style>
+  <Style ss:ID="TableHeader">
+   <Font ss:FontName="Calibri" ss:Size="11" ss:Bold="1" ss:Color="#FFFFFF"/>
+   <Interior ss:Color="#1F4E78" ss:Pattern="Solid"/>
+   <Alignment ss:Horizontal="Center" ss:Vertical="Center"/>
+   <Borders>
+    <Border ss:Position="Bottom" ss:LineStyle="Continuous" ss:Weight="1" ss:Color="#000000"/>
+    <Border ss:Position="Top" ss:LineStyle="Continuous" ss:Weight="1" ss:Color="#000000"/>
+    <Border ss:Position="Left" ss:LineStyle="Continuous" ss:Weight="1" ss:Color="#000000"/>
+    <Border ss:Position="Right" ss:LineStyle="Continuous" ss:Weight="1" ss:Color="#000000"/>
+   </Borders>
+  </Style>
+  <Style ss:ID="DataCell">
+   <Alignment ss:Horizontal="Left" ss:Vertical="Center"/>
+   <Borders>
+    <Border ss:Position="Bottom" ss:LineStyle="Continuous" ss:Weight="1" ss:Color="#D3D3D3"/>
+    <Border ss:Position="Top" ss:LineStyle="Continuous" ss:Weight="1" ss:Color="#D3D3D3"/>
+    <Border ss:Position="Left" ss:LineStyle="Continuous" ss:Weight="1" ss:Color="#D3D3D3"/>
+    <Border ss:Position="Right" ss:LineStyle="Continuous" ss:Weight="1" ss:Color="#D3D3D3"/>
+   </Borders>
+  </Style>
+ </Styles>
+ <Worksheet ss:Name="Team Members">
+  <Table>`;
+
+    // Add Column specifications with dynamic widths
+    colWidths.forEach(width => {
+        xml += `\n   <Column ss:Width="${width}"/>`;
+    });
+
+    // 1. Company and Heading Rows
+    xml += `\n   <Row ss:Height="40">
+    <Cell ss:MergeAcross="${headers.length - 1}" ss:StyleID="MainTitle">
+     <Data ss:Type="String">SHNOOR - ASSIGNED TEAM MEMBERS</Data>
+    </Cell>
+   </Row>
+   <Row ss:Height="25">
+    <Cell ss:MergeAcross="${headers.length - 1}" ss:StyleID="SubTitle">
+     <Data ss:Type="String">Company: Shnoor   |   Exported on: ${new Date().toLocaleDateString()}</Data>
+    </Cell>
+   </Row>
+   <Row ss:Height="15"/>`; // Spacer row
+
+    // 2. Table Header Row
+    xml += `\n   <Row ss:Height="25">`;
+    headers.forEach(h => {
+        xml += `\n    <Cell ss:StyleID="TableHeader"><Data ss:Type="String">${escapeXML(h)}</Data></Cell>`;
+    });
+    xml += `\n   </Row>`;
+
+    // 3. Table Data Rows
+    rows.forEach(row => {
+        xml += `\n   <Row ss:Height="20">`;
+        row.forEach(cellVal => {
+            xml += `\n    <Cell ss:StyleID="DataCell"><Data ss:Type="String">${escapeXML(cellVal)}</Data></Cell>`;
+        });
+        xml += `\n   </Row>`;
+    });
+
+    xml += `\n  </Table>
+ </Worksheet>
+</Workbook>`;
+
+    const blob = new Blob([xml], { type: 'application/vnd.ms-excel' });
+    const link = document.createElement("a");
+    if (link.download !== undefined) {
+        const url = URL.createObjectURL(blob);
+        link.setAttribute("href", url);
+        link.setAttribute("download", "shnoor_team_members.xls");
+        link.style.visibility = 'hidden';
+        document.body.appendChild(link);
+        link.click();
+        document.body.removeChild(link);
+    }
 }

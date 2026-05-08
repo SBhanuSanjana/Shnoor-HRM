@@ -1508,7 +1508,12 @@ class NotificationView(APIView):
     def get(self, request):
         # Return notifications where target_role matches current user's role
         # Also return sent notifications if the user is an admin or manager
-        target_notifications = Notification.objects.filter(target_role=request.user.role).order_by('-created_at')
+        role_lower = request.user.role.lower() if request.user.role else ''
+        if role_lower == 'team_leader':
+            # Team Leaders should also see general employee announcements and broadcasts
+            target_notifications = Notification.objects.filter(target_role__in=['employee', 'team_leader']).order_by('-created_at')
+        else:
+            target_notifications = Notification.objects.filter(target_role=request.user.role).order_by('-created_at')
         
         sent_notifications = []
         if request.user.role in ['admin', 'manager']:

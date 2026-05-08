@@ -134,7 +134,12 @@
             <div class="glass-panel" style="padding: 1.5rem;">
                 <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 1.5rem;">
                     <h3 style="font-weight: 600;">My Assigned Employees</h3>
-                    <span class="badge" id="member-count-badge" style="background: var(--primary); color: white; padding: 0.25rem 0.75rem; border-radius: 20px; font-size: 0.8rem;">0 Members</span>
+                    <div style="display: flex; gap: 0.75rem; align-items: center;">
+                        <button class="btn btn-primary" onclick="exportTeamToExcel()" style="padding: 0.45rem 0.9rem; font-size: 0.8rem; display: flex; align-items: center; gap: 0.4rem; cursor: pointer; border: none; border-radius: 6px;">
+                            <i class="fa-solid fa-file-excel"></i> Export Team to Excel
+                        </button>
+                        <span class="badge" id="member-count-badge" style="background: var(--primary); color: white; padding: 0.25rem 0.75rem; border-radius: 20px; font-size: 0.8rem;">0 Members</span>
+                    </div>
                 </div>
                 <div class="table-container">
                     <table class="table">
@@ -224,7 +229,7 @@
             <!-- Panel: Tasks should be assigned by Team Leader -->
             <div id="team-tasks-panel" class="task-view-panel">
                 <div class="glass-panel" style="padding: 1.5rem;">
-                    <h3 style="margin-bottom: 1.5rem; font-weight: 600;">Tasks Delegated to My Team</h3>
+                    <h3 style="margin-bottom: 1.5rem; font-weight: 600;">Tasks Assignment to My Team</h3>
                     <div class="table-container">
                         <table class="table">
                             <thead>
