@@ -21,6 +21,7 @@
         <div class="nav-item" data-target="attendance"><i class="fa-solid fa-calendar-check"></i> Attendance</div>
         <div class="nav-item" data-target="tasks"><i class="fa-solid fa-list-check"></i> Team Tasks</div>
         <div class="nav-item" data-target="performance"><i class="fa-solid fa-chart-line"></i> Performance</div>
+        <div class="nav-item" data-target="expenses"><i class="fa-solid fa-wallet"></i> Team Expenses</div>
         <div class="nav-item" data-target="notifications"><i class="fa-solid fa-bell"></i> Notifications</div>
         <div class="nav-item" data-target="profile"><i class="fa-solid fa-user-gear"></i> Profile</div>
 
@@ -429,7 +430,190 @@
                 </form>
             </div>
         </section>
+
+        <!-- View: Team Leader Expenses (Both Team and Personal/Self Claims) -->
+        <section id="expenses" class="view-section">
+            <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 2rem;">
+                <h2 class="gradient-text">Expenses Module</h2>
+                
+                <!-- Toggle between My Claims and Team Claims -->
+                <div style="display: flex; gap: 0.5rem; background: rgba(255,255,255,0.05); padding: 0.35rem; border-radius: 10px;">
+                    <button class="btn btn-primary" id="btnTlViewTeam" onclick="switchTlExpenseView('team')" style="padding: 0.4rem 1.2rem; font-size: 0.85rem; border: none;"><i class="fa-solid fa-users"></i> Team Claims</button>
+                    <button class="btn btn-ghost" id="btnTlViewSelf" onclick="switchTlExpenseView('self')" style="padding: 0.4rem 1.2rem; font-size: 0.85rem; border: none;"><i class="fa-solid fa-user"></i> My Claims</button>
+                </div>
+            </div>
+
+            <!-- Panel 1: Team Expenses -->
+            <div id="tlTeamExpensesPanel" style="display: block;">
+                <!-- Summary Cards -->
+                <div class="dashboard-grid" style="margin-bottom: 2rem; display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 1.5rem;">
+                    <div class="glass-panel" style="padding: 1.25rem; text-align: center;">
+                        <p style="color:var(--text-muted); font-size: 0.85rem; text-transform: uppercase; font-weight: 600;">Team Total Claims</p>
+                        <h2 id="tl-exp-total" style="font-size:1.75rem; color:#fff; margin-top:0.5rem;">₹0.00</h2>
+                    </div>
+                    <div class="glass-panel" style="padding: 1.25rem; text-align: center;">
+                        <p style="color:#f59e0b; font-size: 0.85rem; text-transform: uppercase; font-weight: 600;">Pending Review</p>
+                        <h2 id="tl-exp-pending" style="font-size:1.75rem; color:#f59e0b; margin-top:0.5rem;">₹0.00</h2>
+                    </div>
+                    <div class="glass-panel" style="padding: 1.25rem; text-align: center;">
+                        <p style="color:#10b981; font-size: 0.85rem; text-transform: uppercase; font-weight: 600;">Approved Claims</p>
+                        <h2 id="tl-exp-approved" style="font-size:1.75rem; color:#10b981; margin-top:0.5rem;">₹0.00</h2>
+                    </div>
+                    <div class="glass-panel" style="padding: 1.25rem; text-align: center;">
+                        <p style="color:#f43f5e; font-size: 0.85rem; text-transform: uppercase; font-weight: 600;">Rejected Claims</p>
+                        <h2 id="tl-exp-rejected" style="font-size:1.75rem; color:#f43f5e; margin-top:0.5rem;">₹0.00</h2>
+                    </div>
+                </div>
+
+                <!-- Filters -->
+                <div class="glass-panel" style="padding: 1.5rem; margin-bottom: 2rem;">
+                    <div style="display: flex; gap: 1rem; align-items: flex-end; flex-wrap: wrap;">
+                        <div style="flex: 2; min-width: 250px;">
+                            <label style="display:block; margin-bottom:0.5rem; font-size:0.85rem; color:var(--text-muted);">Search Employee or Title</label>
+                            <div style="position:relative;">
+                                <input type="text" id="tlExpenseSearch" class="form-control" placeholder="Search team claims..." oninput="filterTeamExpenses()" style="width:100%; padding:0.75rem 0.75rem 0.75rem 2.2rem; border-radius:8px; border:1px solid var(--glass-border); background:var(--bg-navy); color:#fff;">
+                                <i class="fa-solid fa-search" style="position:absolute; left:10px; top:50%; transform:translateY(-50%); color:var(--text-muted);"></i>
+                            </div>
+                        </div>
+                        <div style="flex: 1; min-width: 150px;">
+                            <label style="display:block; margin-bottom:0.5rem; font-size:0.85rem; color:var(--text-muted);">Status Filter</label>
+                            <select id="tlFilterStatus" class="form-control" onchange="filterTeamExpenses()" style="width:100%; padding:0.75rem; border-radius:8px; border:1px solid var(--glass-border); background:var(--bg-navy); color:#fff;">
+                                <option value="ALL">All Statuses</option>
+                                <option value="PENDING">Pending</option>
+                                <option value="APPROVED">Approved</option>
+                                <option value="REJECTED">Rejected</option>
+                            </select>
+                        </div>
+                        <div style="display: flex; gap: 0.75rem;">
+                            <button class="btn btn-ghost" onclick="clearTeamExpenseFilters()" style="padding: 0.75rem 1.2rem; height: 44px;"><i class="fa-solid fa-rotate-left"></i> Reset</button>
+                            <button class="btn btn-ghost" onclick="exportTeamExpensesToExcel()" style="padding: 0.75rem 1.2rem; height: 44px;"><i class="fa-solid fa-file-excel"></i> Export Excel</button>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Table section -->
+                <div class="table-container">
+                    <table>
+                        <thead>
+                            <tr>
+                                <th>Employee</th>
+                                <th>Submitted Date</th>
+                                <th>Title/Merchant</th>
+                                <th>Category</th>
+                                <th>Amount</th>
+                                <th>Status</th>
+                                <th>Receipt</th>
+                                <th>Action</th>
+                            </tr>
+                        </thead>
+                        <tbody id="tlExpensesList">
+                            <!-- Populated dynamically -->
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+
+            <!-- Panel 2: Self Expenses (My Personal Claims as Team Leader) -->
+            <div id="tlSelfExpensesPanel" style="display: none;">
+                <!-- Action Buttons -->
+                <div style="display: flex; justify-content: flex-start; align-items: center; margin-bottom: 2rem; gap: 1rem;">
+                    <button class="btn btn-primary" onclick="openTlAddExpenseModal()"><i class="fa-solid fa-plus"></i> Claim Expense</button>
+                </div>
+
+                <!-- Summary Cards (Personal) -->
+                <div class="dashboard-grid" style="margin-bottom: 2rem; display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 1.5rem;">
+                    <div class="glass-panel" style="padding: 1.25rem; text-align: center;">
+                        <p style="color:var(--text-muted); font-size: 0.85rem; text-transform: uppercase; font-weight: 600;">My Total Claims</p>
+                        <h2 id="tl-self-exp-total" style="font-size:1.75rem; color:#fff; margin-top:0.5rem;">₹0.00</h2>
+                    </div>
+                    <div class="glass-panel" style="padding: 1.25rem; text-align: center;">
+                        <p style="color:#f59e0b; font-size: 0.85rem; text-transform: uppercase; font-weight: 600;">Pending Approved</p>
+                        <h2 id="tl-self-exp-pending" style="font-size:1.75rem; color:#f59e0b; margin-top:0.5rem;">₹0.00</h2>
+                    </div>
+                    <div class="glass-panel" style="padding: 1.25rem; text-align: center;">
+                        <p style="color:#10b981; font-size: 0.85rem; text-transform: uppercase; font-weight: 600;">Approved (Paid/Unpaid)</p>
+                        <h2 id="tl-self-exp-approved" style="font-size:1.75rem; color:#10b981; margin-top:0.5rem;">₹0.00</h2>
+                    </div>
+                    <div class="glass-panel" style="padding: 1.25rem; text-align: center;">
+                        <p style="color:#f43f5e; font-size: 0.85rem; text-transform: uppercase; font-weight: 600;">Rejected Claims</p>
+                        <h2 id="tl-self-exp-rejected" style="font-size:1.75rem; color:#f43f5e; margin-top:0.5rem;">₹0.00</h2>
+                    </div>
+                </div>
+
+                <!-- Filters (Personal) -->
+                <div class="glass-panel" style="padding: 1.5rem; margin-bottom: 2rem;">
+                    <div style="display: flex; gap: 1rem; align-items: flex-end; flex-wrap: wrap;">
+                        <div style="flex: 2; min-width: 250px;">
+                            <label style="display:block; margin-bottom:0.5rem; font-size:0.85rem; color:var(--text-muted);">Search Title or Category</label>
+                            <div style="position:relative;">
+                                <input type="text" id="tlSelfExpenseSearch" class="form-control" placeholder="Search my claims..." oninput="filterTlSelfExpenses()" style="width:100%; padding:0.75rem 0.75rem 0.75rem 2.2rem; border-radius:8px; border:1px solid var(--glass-border); background:var(--bg-navy); color:#fff;">
+                                <i class="fa-solid fa-search" style="position:absolute; left:10px; top:50%; transform:translateY(-50%); color:var(--text-muted);"></i>
+                            </div>
+                        </div>
+                        <div style="flex: 1; min-width: 150px;">
+                            <label style="display:block; margin-bottom:0.5rem; font-size:0.85rem; color:var(--text-muted);">Status Filter</label>
+                            <select id="tlSelfFilterStatus" class="form-control" onchange="filterTlSelfExpenses()" style="width:100%; padding:0.75rem; border-radius:8px; border:1px solid var(--glass-border); background:var(--bg-navy); color:#fff;">
+                                <option value="ALL">All Statuses</option>
+                                <option value="PENDING">Pending</option>
+                                <option value="APPROVED">Approved</option>
+                                <option value="REJECTED">Rejected</option>
+                                <option value="DRAFT">Draft</option>
+                            </select>
+                        </div>
+                        <div>
+                            <button class="btn btn-ghost" onclick="clearTlSelfExpenseFilters()" style="padding: 0.75rem 1.2rem; height: 44px;"><i class="fa-solid fa-rotate-left"></i> Reset</button>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Table (Personal) -->
+                <div class="table-container">
+                    <table>
+                        <thead>
+                            <tr>
+                                <th>Submitted Date</th>
+                                <th>Title/Merchant</th>
+                                <th>Category</th>
+                                <th>Amount</th>
+                                <th>Status</th>
+                                <th>Payment Status</th>
+                                <th>Receipt</th>
+                                <th>Manager Remark</th>
+                            </tr>
+                        </thead>
+                        <tbody id="tlSelfExpensesList">
+                            <!-- Populated dynamically -->
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </section>
     </main>
+
+    <!-- Modal: Review Team Expense Claim -->
+    <div id="reviewExpenseModal" class="modal" style="display: none;">
+        <div class="modal-content glass-panel" style="max-width: 500px;">
+            <div style="display: flex; justify-content: space-between; align-items: center; border-bottom: 1px solid var(--glass-border); padding-bottom: 1rem; margin-bottom: 1.5rem;">
+                <h3 class="gradient-text" style="font-weight: 600;">Review Expense Claim</h3>
+                <span class="close-btn" onclick="closeReviewExpenseModal()" style="cursor: pointer; font-size: 1.5rem;"><i class="fa-solid fa-xmark"></i></span>
+            </div>
+            <div id="review-modal-info" style="margin-bottom: 1.5rem; display: flex; flex-direction: column; gap: 0.5rem; background: rgba(255,255,255,0.03); padding: 1rem; border-radius: 8px;">
+                <!-- Dynamically filled -->
+            </div>
+            <form id="reviewExpenseForm" onsubmit="submitExpenseDecision(event)">
+                <input type="hidden" id="reviewExpenseId">
+                <div class="form-group" style="margin-bottom: 1.5rem;">
+                    <label style="display:block; margin-bottom:0.5rem; font-size:0.85rem;">Remark / Comments</label>
+                    <textarea id="reviewRemark" class="form-control" placeholder="Enter reason for approval or rejection..." rows="3" required style="width:100%; padding:0.75rem; border-radius:8px; border:1px solid var(--glass-border); background:var(--bg-navy); color:#fff; resize: vertical;"></textarea>
+                </div>
+                <div style="display: flex; justify-content: flex-end; gap: 1rem;">
+                    <button type="button" class="btn btn-ghost" onclick="closeReviewExpenseModal()">Cancel</button>
+                    <button type="button" class="btn btn-primary" onclick="submitExpenseDecision(event, 'REJECTED')" style="background: #f43f5e; border-color: #f43f5e;"><i class="fa-solid fa-ban"></i> Reject</button>
+                    <button type="submit" class="btn btn-primary" onclick="submitExpenseDecision(event, 'APPROVED')"><i class="fa-solid fa-check"></i> Approve</button>
+                </div>
+            </form>
+        </div>
+    </div>
 
     <!-- Modal: Employee Detail Profile -->
     <div id="memberDetailModal" class="modal">
@@ -493,6 +677,53 @@
             <div style="display: flex; flex-direction: column; gap: 1.2rem;" id="task-detail-container">
                 <!-- Filled dynamically -->
             </div>
+        </div>
+    </div>
+
+    <!-- Modal: Submit Personal Expense Claim (Team Leader) -->
+    <div id="addTlExpenseModal" class="modal" style="display: none;">
+        <div class="modal-content glass-panel" style="max-width: 600px;">
+            <div style="display: flex; justify-content: space-between; align-items: center; border-bottom: 1px solid var(--glass-border); padding-bottom: 1rem; margin-bottom: 1.5rem;">
+                <h3 class="gradient-text"><i class="fa-solid fa-receipt"></i> Submit Expense Claim</h3>
+                <span class="close-btn" onclick="closeTlAddExpenseModal()" style="cursor: pointer; font-size: 1.5rem;"><i class="fa-solid fa-xmark"></i></span>
+            </div>
+            <form id="applyTlExpenseForm" onsubmit="submitTlExpenseClaim(event)">
+                <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 1rem; margin-bottom: 1.25rem;">
+                    <div class="form-group">
+                        <label style="display:block; margin-bottom:0.5rem; font-size:0.85rem;">Title/Merchant</label>
+                        <input type="text" id="tlSelfExpenseTitle" class="form-control" placeholder="e.g., Uber Ride" required style="width:100%; padding:0.75rem; border-radius:8px; border:1px solid var(--glass-border); background:var(--bg-navy); color:#fff;">
+                    </div>
+                    <div class="form-group">
+                        <label style="display:block; margin-bottom:0.5rem; font-size:0.85rem;">Category</label>
+                        <select id="tlSelfExpenseCategory" class="form-control" required style="width:100%; padding:0.75rem; border-radius:8px; border:1px solid var(--glass-border); background:var(--bg-navy); color:#fff;">
+                            <option value="Travel">Travel</option>
+                            <option value="Meals">Meals</option>
+                            <option value="Supplies">Supplies</option>
+                            <option value="Software">Software</option>
+                            <option value="Other">Other</option>
+                        </select>
+                    </div>
+                </div>
+                <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 1rem; margin-bottom: 1.25rem;">
+                    <div class="form-group">
+                        <label style="display:block; margin-bottom:0.5rem; font-size:0.85rem;">Amount (₹)</label>
+                        <input type="number" step="0.01" id="tlSelfExpenseAmount" class="form-control" placeholder="0.00" required style="width:100%; padding:0.75rem; border-radius:8px; border:1px solid var(--glass-border); background:var(--bg-navy); color:#fff;">
+                    </div>
+                    <div class="form-group">
+                        <label style="display:block; margin-bottom:0.5rem; font-size:0.85rem;">Receipt File (Bill)</label>
+                        <input type="file" id="tlSelfExpenseReceipt" class="form-control" style="width:100%; padding:0.5rem; border-radius:8px; border:1px solid var(--glass-border); background:var(--bg-navy); color:#fff;">
+                    </div>
+                </div>
+                <div class="form-group" style="margin-bottom: 1.5rem;">
+                    <label style="display:block; margin-bottom:0.5rem; font-size:0.85rem;">Description / Remarks</label>
+                    <textarea id="tlSelfExpenseDesc" class="form-control" placeholder="Provide extra details..." rows="3" style="width:100%; padding:0.75rem; border-radius:8px; border:1px solid var(--glass-border); background:var(--bg-navy); color:#fff; resize: vertical;"></textarea>
+                </div>
+                <div style="display: flex; justify-content: flex-end; gap: 1rem;">
+                    <button type="button" class="btn btn-ghost" onclick="closeTlAddExpenseModal()">Cancel</button>
+                    <button type="button" class="btn btn-ghost" onclick="submitTlExpenseClaim(event, true)" style="border-color: var(--text-muted); color: var(--text-muted);"><i class="fa-solid fa-floppy-disk"></i> Save Draft</button>
+                    <button type="submit" class="btn btn-primary"><i class="fa-solid fa-paper-plane"></i> Submit Claim</button>
+                </div>
+            </form>
         </div>
     </div>
 

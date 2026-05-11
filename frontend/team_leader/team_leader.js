@@ -111,6 +111,7 @@ function initNavigation() {
                 'attendance': 'Team Attendance Log',
                 'tasks': 'Team Tasks & Assignment',
                 'performance': 'Team Performance Metrics',
+                'expenses': 'Team Expense Claims',
                 'notifications': 'Notifications & Broadcasts',
                 'profile': 'My Personal Profile'
             };
@@ -132,6 +133,9 @@ function initNavigation() {
                     break;
                 case 'performance':
                     loadPerformance();
+                    break;
+                case 'expenses':
+                    loadTeamExpenses();
                     break;
                 case 'notifications':
                     loadNotifications();
@@ -856,6 +860,699 @@ function exportTeamToExcel() {
         const url = URL.createObjectURL(blob);
         link.setAttribute("href", url);
         link.setAttribute("download", "shnoor_team_members.xls");
+        link.style.visibility = 'hidden';
+        document.body.appendChild(link);
+        link.click();
+        document.body.removeChild(link);
+    }
+}
+
+
+// --- Team Expenses Module ---
+let localTeamExpenses = [];
+
+async function loadTeamExpenses() {
+    const tbody = document.getElementById('tlExpensesList');
+    if (!tbody) return;
+    tbody.innerHTML = '<tr><td colspan="8" style="text-align:center;">Loading team expenses...</td></tr>';
+
+    const res = await fetchData('/teamleader/expenses/');
+    if (!res) {
+        tbody.innerHTML = '<tr><td colspan="8" style="text-align:center; color:var(--text-muted);">Failed to load team expense records.</td></tr>';
+        return;
+    }
+
+    localTeamExpenses = res;
+    renderTeamExpenses(res);
+    loadTeamExpenseStats(res);
+}
+
+function renderTeamExpenses(data) {
+    const tbody = document.getElementById('tlExpensesList');
+    if (!tbody) return;
+    tbody.innerHTML = '';
+
+    if (data.length === 0) {
+        tbody.innerHTML = '<tr><td colspan="8" style="text-align:center; color:var(--text-muted); padding: 2rem;">No team expense claims found matching filters.</td></tr>';
+        return;
+    }
+
+    data.forEach(exp => {
+        let statusBadge = '';
+        const statusVal = exp.status.toUpperCase();
+        if (statusVal === 'APPROVED') statusBadge = '<span class="status-badge status-present" style="background: rgba(16,185,129,0.15); color: #10b981; padding: 0.25rem 0.6rem; border-radius: 4px; font-size: 0.75rem; font-weight: 600;">Approved</span>';
+        else if (statusVal === 'REJECTED') statusBadge = '<span class="status-badge status-absent" style="background: rgba(244,63,94,0.15); color: #f43f5e; padding: 0.25rem 0.6rem; border-radius: 4px; font-size: 0.75rem; font-weight: 600;">Rejected</span>';
+        else statusBadge = '<span class="status-badge status-pending" style="background: rgba(245,158,11,0.15); color: #f59e0b; padding: 0.25rem 0.6rem; border-radius: 4px; font-size: 0.75rem; font-weight: 600;">Pending</span>';
+
+        let receiptLink = '<span style="color:var(--text-muted); font-size:0.85rem;"><i class="fa-solid fa-ban"></i> None</span>';
+        if (exp.receipt) {
+            const fileUrl = exp.receipt.startsWith('http') ? exp.receipt : `http://127.0.0.1:8000${exp.receipt}`;
+            receiptLink = `<a href="${fileUrl}" target="_blank" style="color: var(--primary); text-decoration: none; font-weight: 500; font-size: 0.85rem;"><i class="fa-solid fa-arrow-up-right-from-square"></i> View</a>`;
+        }
+
+        let actionBtn = '-';
+        if (statusVal === 'PENDING') {
+            actionBtn = `<button class="btn btn-primary" style="padding: 0.25rem 0.6rem; font-size: 0.75rem;" onclick="openReviewExpenseModal(${exp.id}, '${escapeJS(exp.employee_name)}', ${exp.amount}, '${escapeJS(exp.category)}', '${escapeJS(exp.submitted_at_str)}')"><i class="fa-solid fa-gavel"></i> Review</button>`;
+        }
+
+        tbody.innerHTML += `
+            <tr>
+                <td style="font-weight: 600; color:#fff;">${escapeHTML(exp.employee_name)}</td>
+                <td>${exp.submitted_at_str || '-'}</td>
+                <td style="font-weight: 500;">${escapeHTML(exp.title)}</td>
+                <td>${escapeHTML(exp.category)}</td>
+                <td style="font-weight: 600; color: #fff;">₹${parseFloat(exp.amount).toFixed(2)}</td>
+                <td>${statusBadge}</td>
+                <td>${receiptLink}</td>
+                <td>${actionBtn}</td>
+            </tr>
+        `;
+    });
+}
+
+function loadTeamExpenseStats(data) {
+    let total = 0;
+    let pending = 0;
+    let approved = 0;
+    let rejected = 0;
+
+    data.forEach(exp => {
+        const amt = parseFloat(exp.amount) || 0;
+        const stat = exp.status.toUpperCase();
+        total += amt;
+        if (stat === 'PENDING') pending += amt;
+        else if (stat === 'APPROVED') approved += amt;
+        else if (stat === 'REJECTED') rejected += amt;
+    });
+
+    document.getElementById('tl-exp-total').innerText = `₹${total.toLocaleString('en-IN', { minimumFractionDigits: 2, maximumFractionDigits: 2 })}`;
+    document.getElementById('tl-exp-pending').innerText = `₹${pending.toLocaleString('en-IN', { minimumFractionDigits: 2, maximumFractionDigits: 2 })}`;
+    document.getElementById('tl-exp-approved').innerText = `₹${approved.toLocaleString('en-IN', { minimumFractionDigits: 2, maximumFractionDigits: 2 })}`;
+    document.getElementById('tl-exp-rejected').innerText = `₹${rejected.toLocaleString('en-IN', { minimumFractionDigits: 2, maximumFractionDigits: 2 })}`;
+}
+
+async function filterTeamExpenses() {
+    const searchVal = document.getElementById('tlExpenseSearch').value.toLowerCase();
+    const statusVal = document.getElementById('tlFilterStatus').value;
+
+    let query = `?search=${encodeURIComponent(searchVal)}`;
+    if (statusVal !== 'ALL') query += `&status=${statusVal}`;
+
+    const res = await fetchData(`/teamleader/expenses/${query}`);
+    if (res) {
+        renderTeamExpenses(res);
+    }
+}
+
+function clearTeamExpenseFilters() {
+    document.getElementById('tlExpenseSearch').value = '';
+    document.getElementById('tlFilterStatus').value = 'ALL';
+    loadTeamExpenses();
+}
+
+function openReviewExpenseModal(id, employeeName, amount, category, date) {
+    const modal = document.getElementById('reviewExpenseModal');
+    if (modal) {
+        modal.style.display = 'flex';
+        document.getElementById('reviewExpenseId').value = id;
+        document.getElementById('reviewRemark').value = '';
+        
+        document.getElementById('review-modal-info').innerHTML = `
+            <div><strong style="color: var(--text-muted); font-size: 0.85rem;">Employee:</strong> <span style="font-weight: 600; color: #fff;">${escapeHTML(employeeName)}</span></div>
+            <div><strong style="color: var(--text-muted); font-size: 0.85rem;">Amount:</strong> <span style="font-weight: 600; color: var(--primary);">₹${parseFloat(amount).toFixed(2)}</span></div>
+            <div><strong style="color: var(--text-muted); font-size: 0.85rem;">Category:</strong> <span>${escapeHTML(category)}</span></div>
+            <div><strong style="color: var(--text-muted); font-size: 0.85rem;">Submitted Date:</strong> <span>${escapeHTML(date)}</span></div>
+        `;
+    }
+}
+
+function closeReviewExpenseModal() {
+    const modal = document.getElementById('reviewExpenseModal');
+    if (modal) modal.style.display = 'none';
+}
+
+async function submitExpenseDecision(event, decision) {
+    if (event) event.preventDefault();
+
+    const id = document.getElementById('reviewExpenseId').value;
+    const remark = document.getElementById('reviewRemark').value;
+
+    if (!remark) {
+        alert('Please provide a review remark/comment.');
+        return;
+    }
+
+    const res = await fetchData('/teamleader/expenses/update/', {
+        method: 'POST',
+        body: JSON.stringify({
+            expense_id: id,
+            status: decision,
+            remark: remark
+        })
+    });
+
+    if (res) {
+        alert(`Expense claim successfully ${decision.toLowerCase()}!`);
+        closeReviewExpenseModal();
+        loadTeamExpenses();
+    } else {
+        alert('Failed to save review decision.');
+    }
+}
+
+// Escaping helpers
+function escapeHTML(str) {
+    if (!str) return '';
+    return str.toString()
+        .replace(/&/g, "&amp;")
+        .replace(/</g, "&lt;")
+        .replace(/>/g, "&gt;")
+        .replace(/"/g, "&quot;")
+        .replace(/'/g, "&#039;");
+}
+
+function escapeJS(str) {
+    if (!str) return '';
+    return str.toString()
+        .replace(/'/g, "\\'")
+        .replace(/"/g, '\\"');
+}
+
+// --- Team Leader Personal Expenses ---
+let localTlSelfExpenses = [];
+
+function switchTlExpenseView(view) {
+    const btnTeam = document.getElementById('btnTlViewTeam');
+    const btnSelf = document.getElementById('btnTlViewSelf');
+    const panelTeam = document.getElementById('tlTeamExpensesPanel');
+    const panelSelf = document.getElementById('tlSelfExpensesPanel');
+
+    if (view === 'team') {
+        btnTeam.className = 'btn btn-primary';
+        btnSelf.className = 'btn btn-ghost';
+        panelTeam.style.display = 'block';
+        panelSelf.style.display = 'none';
+        loadTeamExpenses();
+    } else {
+        btnTeam.className = 'btn btn-ghost';
+        btnSelf.className = 'btn btn-primary';
+        panelTeam.style.display = 'none';
+        panelSelf.style.display = 'block';
+        loadTlSelfExpenses();
+    }
+}
+
+async function loadTlSelfExpenses() {
+    const tbody = document.getElementById('tlSelfExpensesList');
+    if (!tbody) return;
+    tbody.innerHTML = '<tr><td colspan="8" style="text-align:center;">Loading my expenses...</td></tr>';
+
+    const res = await fetchData('/employee/expenses/');
+    if (!res) {
+        tbody.innerHTML = '<tr><td colspan="8" style="text-align:center; color:var(--text-muted);">Failed to load personal expense records.</td></tr>';
+        return;
+    }
+
+    localTlSelfExpenses = res;
+    renderTlSelfExpenses(res);
+    loadTlSelfExpenseStats(res);
+}
+
+function renderTlSelfExpenses(data) {
+    const tbody = document.getElementById('tlSelfExpensesList');
+    if (!tbody) return;
+    tbody.innerHTML = '';
+
+    if (data.length === 0) {
+        tbody.innerHTML = '<tr><td colspan="8" style="text-align:center; color:var(--text-muted); padding: 2rem;">No personal expense claims found matching filters.</td></tr>';
+        return;
+    }
+
+    data.forEach(exp => {
+        let statusBadge = '';
+        const statusVal = exp.status.toUpperCase();
+        if (statusVal === 'APPROVED') {
+            statusBadge = '<span class="status-badge status-present" style="background: rgba(16,185,129,0.15); color: #10b981; padding: 0.25rem 0.6rem; border-radius: 4px; font-size: 0.75rem; font-weight: 600;">Approved</span>';
+        } else if (statusVal === 'REJECTED') {
+            statusBadge = '<span class="status-badge status-absent" style="background: rgba(244,63,94,0.15); color: #f43f5e; padding: 0.25rem 0.6rem; border-radius: 4px; font-size: 0.75rem; font-weight: 600;">Rejected</span>';
+        } else if (statusVal === 'DRAFT') {
+            statusBadge = '<span class="status-badge status-draft" style="background: rgba(255,255,255,0.1); color: var(--text-muted); padding: 0.25rem 0.6rem; border-radius: 4px; font-size: 0.75rem; font-weight: 600;">Draft</span>';
+        } else {
+            statusBadge = '<span class="status-badge status-pending" style="background: rgba(245,158,11,0.15); color: #f59e0b; padding: 0.25rem 0.6rem; border-radius: 4px; font-size: 0.75rem; font-weight: 600;">Pending</span>';
+        }
+
+        let payBadge = '';
+        const payVal = exp.payment_status.toUpperCase();
+        if (payVal === 'PAID') {
+            payBadge = '<span class="status-badge" style="background: rgba(16,185,129,0.15); color: #10b981; padding: 0.25rem 0.6rem; border-radius: 4px; font-size: 0.75rem; font-weight: 600;">Paid</span>';
+        } else {
+            payBadge = '<span class="status-badge" style="background: rgba(244,63,94,0.08); color: var(--text-muted); padding: 0.25rem 0.6rem; border-radius: 4px; font-size: 0.75rem; font-weight: 600;">Unpaid</span>';
+        }
+
+        let receiptLink = '<span style="color:var(--text-muted); font-size:0.85rem;"><i class="fa-solid fa-ban"></i> None</span>';
+        if (exp.receipt) {
+            const fileUrl = exp.receipt.startsWith('http') ? exp.receipt : `http://127.0.0.1:8000${exp.receipt}`;
+            receiptLink = `<a href="${fileUrl}" target="_blank" style="color: var(--primary); text-decoration: none; font-weight: 500; font-size: 0.85rem;"><i class="fa-solid fa-arrow-up-right-from-square"></i> View</a>`;
+        }
+
+        tbody.innerHTML += `
+            <tr>
+                <td>${exp.submitted_at_str || '-'}</td>
+                <td style="font-weight: 500; color:#fff;">${escapeHTML(exp.title)}</td>
+                <td>${escapeHTML(exp.category)}</td>
+                <td style="font-weight: 600; color: #fff;">₹${parseFloat(exp.amount).toFixed(2)}</td>
+                <td>${statusBadge}</td>
+                <td>${payBadge}</td>
+                <td>${receiptLink}</td>
+                <td style="color: var(--text-muted); font-size:0.85rem;">${escapeHTML(exp.manager_remark || '-')}</td>
+            </tr>
+        `;
+    });
+}
+
+function loadTlSelfExpenseStats(data) {
+    let total = 0;
+    let pending = 0;
+    let approved = 0;
+    let rejected = 0;
+
+    data.forEach(exp => {
+        const amt = parseFloat(exp.amount) || 0;
+        const stat = exp.status.toUpperCase();
+        total += amt;
+        if (stat === 'PENDING') pending += amt;
+        else if (stat === 'APPROVED') approved += amt;
+        else if (stat === 'REJECTED') rejected += amt;
+    });
+
+    document.getElementById('tl-self-exp-total').innerText = `₹${total.toLocaleString('en-IN', { minimumFractionDigits: 2, maximumFractionDigits: 2 })}`;
+    document.getElementById('tl-self-exp-pending').innerText = `₹${pending.toLocaleString('en-IN', { minimumFractionDigits: 2, maximumFractionDigits: 2 })}`;
+    document.getElementById('tl-self-exp-approved').innerText = `₹${approved.toLocaleString('en-IN', { minimumFractionDigits: 2, maximumFractionDigits: 2 })}`;
+    document.getElementById('tl-self-exp-rejected').innerText = `₹${rejected.toLocaleString('en-IN', { minimumFractionDigits: 2, maximumFractionDigits: 2 })}`;
+}
+
+async function filterTlSelfExpenses() {
+    const searchVal = document.getElementById('tlSelfExpenseSearch').value.toLowerCase();
+    const statusVal = document.getElementById('tlSelfFilterStatus').value;
+
+    let query = `?search=${encodeURIComponent(searchVal)}`;
+    if (statusVal !== 'ALL') query += `&status=${statusVal}`;
+
+    const res = await fetchData(`/employee/expenses/${query}`);
+    if (res) {
+        renderTlSelfExpenses(res);
+    }
+}
+
+function clearTlSelfExpenseFilters() {
+    document.getElementById('tlSelfExpenseSearch').value = '';
+    document.getElementById('tlSelfFilterStatus').value = 'ALL';
+    loadTlSelfExpenses();
+}
+
+function openTlAddExpenseModal() {
+    const modal = document.getElementById('addTlExpenseModal');
+    if (modal) {
+        modal.style.display = 'flex';
+        document.getElementById('applyTlExpenseForm').reset();
+    }
+}
+
+function closeTlAddExpenseModal() {
+    const modal = document.getElementById('addTlExpenseModal');
+    if (modal) modal.style.display = 'none';
+}
+
+async function submitTlExpenseClaim(event, isDraft) {
+    if (event) event.preventDefault();
+
+    const title = document.getElementById('tlSelfExpenseTitle').value;
+    const category = document.getElementById('tlSelfExpenseCategory').value;
+    const amount = document.getElementById('tlSelfExpenseAmount').value;
+    const description = document.getElementById('tlSelfExpenseDesc').value;
+    const receiptFile = document.getElementById('tlSelfExpenseReceipt').files[0];
+
+    if (!category || !amount) {
+        alert('Category and Amount are required fields.');
+        return;
+    }
+
+    const formData = new FormData();
+    formData.append('title', title);
+    formData.append('category', category);
+    formData.append('amount', amount);
+    formData.append('description', description);
+    formData.append('status', isDraft ? 'DRAFT' : 'PENDING');
+    if (receiptFile) {
+        formData.append('receipt', receiptFile);
+    }
+
+    const token = localStorage.getItem('token');
+    const headers = {};
+    if (token) {
+        headers['Authorization'] = `Token ${token}`;
+    }
+
+    try {
+        const response = await fetch('http://127.0.0.1:8000/api/employee/expenses/create/', {
+            method: 'POST',
+            headers: headers,
+            body: formData
+        });
+
+        if (response.ok) {
+            alert(isDraft ? 'Draft expense saved successfully!' : 'Expense claim submitted successfully!');
+            closeTlAddExpenseModal();
+            loadTlSelfExpenses();
+        } else {
+            const data = await response.json();
+            alert(data.message || 'Failed to submit expense claim.');
+        }
+    } catch (err) {
+        console.error(err);
+        alert('Error submitting expense claim.');
+    }
+}
+
+function exportTlPersonalExpenses() {
+    if (!localTlSelfExpenses || localTlSelfExpenses.length === 0) {
+        alert("No personal expense claims available to export.");
+        return;
+    }
+
+    const headers = [
+        "Submitted Date",
+        "Title/Merchant",
+        "Category",
+        "Amount (₹)",
+        "Review Status",
+        "Payment Status",
+        "Manager Remark",
+        "Receipt Link"
+    ];
+
+    const rows = localTlSelfExpenses.map(exp => {
+        let receiptUrl = '';
+        if (exp.receipt) {
+            receiptUrl = exp.receipt.startsWith('http') ? exp.receipt : `http://127.0.0.1:8000${exp.receipt}`;
+        }
+        return [
+            exp.submitted_at_str || '-',
+            exp.title || '',
+            exp.category || '',
+            parseFloat(exp.amount || 0).toFixed(2),
+            exp.status || '',
+            exp.payment_status || '',
+            exp.manager_remark || '',
+            receiptUrl
+        ];
+    });
+
+    // Calculate dynamic column widths (last column has View Receipt or No Receipt)
+    const colWidths = headers.map((header, i) => {
+        let maxLen = header.length;
+        rows.forEach(row => {
+            let valStr = '';
+            if (i === 7) {
+                valStr = row[i] ? "View Receipt" : "No Receipt";
+            } else {
+                valStr = String(row[i] || '');
+            }
+            if (valStr.length > maxLen) maxLen = valStr.length;
+        });
+        return Math.max(110, (maxLen * 8.5) + 20);
+    });
+
+    let xml = `<?xml version="1.0"?>
+<?mso-application progid="Excel.Sheet"?>
+<Workbook xmlns="urn:schemas-microsoft-com:office:spreadsheet"
+ xmlns:o="urn:schemas-microsoft-com:office:office"
+ xmlns:x="urn:schemas-microsoft-com:office:excel"
+ xmlns:ss="urn:schemas-microsoft-com:office:spreadsheet"
+ xmlns:html="http://www.w3.org/TR/REC-html40">
+ <Styles>
+  <Style ss:ID="Default" ss:Name="Normal">
+   <Alignment ss:Vertical="Center"/>
+   <Borders/>
+   <Font ss:FontName="Calibri" ss:Size="11" ss:Color="#000000"/>
+   <Interior/>
+   <NumberFormat/>
+   <Protection/>
+  </Style>
+  <Style ss:ID="MainTitle">
+   <Font ss:FontName="Calibri" ss:Size="16" ss:Bold="1" ss:Color="#FFFFFF"/>
+   <Alignment ss:Horizontal="Center" ss:Vertical="Center"/>
+   <Interior ss:Color="#1B365D" ss:Pattern="Solid"/>
+  </Style>
+  <Style ss:ID="SubTitle">
+   <Font ss:FontName="Calibri" ss:Size="11" ss:Italic="1" ss:Color="#FFFFFF"/>
+   <Alignment ss:Horizontal="Center" ss:Vertical="Center"/>
+   <Interior ss:Color="#2E5B9A" ss:Pattern="Solid"/>
+  </Style>
+  <Style ss:ID="TableHeader">
+   <Font ss:FontName="Calibri" ss:Size="11" ss:Bold="1" ss:Color="#FFFFFF"/>
+   <Interior ss:Color="#1F4E78" ss:Pattern="Solid"/>
+   <Alignment ss:Horizontal="Center" ss:Vertical="Center"/>
+   <Borders>
+    <Border ss:Position="Bottom" ss:LineStyle="Continuous" ss:Weight="1" ss:Color="#000000"/>
+    <Border ss:Position="Top" ss:LineStyle="Continuous" ss:Weight="1" ss:Color="#000000"/>
+    <Border ss:Position="Left" ss:LineStyle="Continuous" ss:Weight="1" ss:Color="#000000"/>
+    <Border ss:Position="Right" ss:LineStyle="Continuous" ss:Weight="1" ss:Color="#000000"/>
+   </Borders>
+  </Style>
+  <Style ss:ID="DataCell">
+   <Alignment ss:Horizontal="Left" ss:Vertical="Center"/>
+   <Borders>
+    <Border ss:Position="Bottom" ss:LineStyle="Continuous" ss:Weight="1" ss:Color="#D3D3D3"/>
+    <Border ss:Position="Top" ss:LineStyle="Continuous" ss:Weight="1" ss:Color="#D3D3D3"/>
+    <Border ss:Position="Left" ss:LineStyle="Continuous" ss:Weight="1" ss:Color="#D3D3D3"/>
+    <Border ss:Position="Right" ss:LineStyle="Continuous" ss:Weight="1" ss:Color="#D3D3D3"/>
+   </Borders>
+  </Style>
+  <Style ss:ID="HyperlinkCell">
+   <Font ss:FontName="Calibri" ss:Size="11" ss:Color="#0563C1" ss:Underline="Single"/>
+   <Alignment ss:Horizontal="Left" ss:Vertical="Center"/>
+   <Borders>
+    <Border ss:Position="Bottom" ss:LineStyle="Continuous" ss:Weight="1" ss:Color="#D3D3D3"/>
+    <Border ss:Position="Top" ss:LineStyle="Continuous" ss:Weight="1" ss:Color="#D3D3D3"/>
+    <Border ss:Position="Left" ss:LineStyle="Continuous" ss:Weight="1" ss:Color="#D3D3D3"/>
+    <Border ss:Position="Right" ss:LineStyle="Continuous" ss:Weight="1" ss:Color="#D3D3D3"/>
+   </Borders>
+  </Style>
+ </Styles>
+ <Worksheet ss:Name="My Expenses">
+  <Table>`;
+
+    colWidths.forEach(width => {
+        xml += `\n   <Column ss:Width="${width}"/>`;
+    });
+
+    xml += `\n   <Row ss:Height="40">
+    <Cell ss:MergeAcross="${headers.length - 1}" ss:StyleID="MainTitle">
+     <Data ss:Type="String">SHNOOR - PERSONAL EXPENSES EXPORT</Data>
+    </Cell>
+   </Row>
+   <Row ss:Height="25">
+    <Cell ss:MergeAcross="${headers.length - 1}" ss:StyleID="SubTitle">
+     <Data ss:Type="String">Company: Shnoor   |   Exported on: ${new Date().toLocaleDateString()}</Data>
+    </Cell>
+   </Row>
+   <Row ss:Height="15"/>`;
+
+    xml += `\n   <Row ss:Height="25">`;
+    headers.forEach(h => {
+        xml += `\n    <Cell ss:StyleID="TableHeader"><Data ss:Type="String">${escapeXML(h)}</Data></Cell>`;
+    });
+    xml += `\n   </Row>`;
+
+    rows.forEach(row => {
+        xml += `\n   <Row ss:Height="20">`;
+        // Print columns 0 to 6 normally
+        for (let i = 0; i < 7; i++) {
+            xml += `\n    <Cell ss:StyleID="DataCell"><Data ss:Type="String">${escapeXML(row[i])}</Data></Cell>`;
+        }
+        // Last column: Link column
+        const receiptUrl = row[7];
+        if (receiptUrl) {
+            xml += `\n    <Cell ss:StyleID="HyperlinkCell" ss:HRef="${escapeXML(receiptUrl)}"><Data ss:Type="String">View Receipt</Data></Cell>`;
+        } else {
+            xml += `\n    <Cell ss:StyleID="DataCell"><Data ss:Type="String">No Receipt</Data></Cell>`;
+        }
+        xml += `\n   </Row>`;
+    });
+
+    xml += `\n  </Table>
+ </Worksheet>
+</Workbook>`;
+
+    const blob = new Blob([xml], { type: 'application/vnd.ms-excel' });
+    const link = document.createElement("a");
+    if (link.download !== undefined) {
+        const url = URL.createObjectURL(blob);
+        link.setAttribute("href", url);
+        link.setAttribute("download", "my_personal_expenses.xls");
+        link.style.visibility = 'hidden';
+        document.body.appendChild(link);
+        link.click();
+        document.body.removeChild(link);
+    }
+}
+
+function exportTeamExpensesToExcel() {
+    if (!localTeamExpenses || localTeamExpenses.length === 0) {
+        alert("No team expense claims available to export.");
+        return;
+    }
+
+    const headers = [
+        "Employee Name",
+        "Submitted Date",
+        "Title/Merchant",
+        "Category",
+        "Amount (₹)",
+        "Status",
+        "Receipt Link"
+    ];
+
+    const rows = localTeamExpenses.map(exp => {
+        let receiptUrl = '';
+        if (exp.receipt) {
+            receiptUrl = exp.receipt.startsWith('http') ? exp.receipt : `http://127.0.0.1:8000${exp.receipt}`;
+        }
+        return [
+            exp.employee_name || '',
+            exp.submitted_at_str || '-',
+            exp.title || '',
+            exp.category || '',
+            parseFloat(exp.amount || 0).toFixed(2),
+            exp.status || '',
+            receiptUrl
+        ];
+    });
+
+    // Calculate dynamic column widths (last column has View Receipt or No Receipt)
+    const colWidths = headers.map((header, i) => {
+        let maxLen = header.length;
+        rows.forEach(row => {
+            let valStr = '';
+            if (i === 6) {
+                valStr = row[i] ? "View Receipt" : "No Receipt";
+            } else {
+                valStr = String(row[i] || '');
+            }
+            if (valStr.length > maxLen) maxLen = valStr.length;
+        });
+        return Math.max(110, (maxLen * 8.5) + 20);
+    });
+
+    let xml = `<?xml version="1.0"?>
+<?mso-application progid="Excel.Sheet"?>
+<Workbook xmlns="urn:schemas-microsoft-com:office:spreadsheet"
+ xmlns:o="urn:schemas-microsoft-com:office:office"
+ xmlns:x="urn:schemas-microsoft-com:office:excel"
+ xmlns:ss="urn:schemas-microsoft-com:office:spreadsheet"
+ xmlns:html="http://www.w3.org/TR/REC-html40">
+ <Styles>
+  <Style ss:ID="Default" ss:Name="Normal">
+   <Alignment ss:Vertical="Center"/>
+   <Borders/>
+   <Font ss:FontName="Calibri" ss:Size="11" ss:Color="#000000"/>
+   <Interior/>
+   <NumberFormat/>
+   <Protection/>
+  </Style>
+  <Style ss:ID="MainTitle">
+   <Font ss:FontName="Calibri" ss:Size="16" ss:Bold="1" ss:Color="#FFFFFF"/>
+   <Alignment ss:Horizontal="Center" ss:Vertical="Center"/>
+   <Interior ss:Color="#1B365D" ss:Pattern="Solid"/>
+  </Style>
+  <Style ss:ID="SubTitle">
+   <Font ss:FontName="Calibri" ss:Size="11" ss:Italic="1" ss:Color="#FFFFFF"/>
+   <Alignment ss:Horizontal="Center" ss:Vertical="Center"/>
+   <Interior ss:Color="#2E5B9A" ss:Pattern="Solid"/>
+  </Style>
+  <Style ss:ID="TableHeader">
+   <Font ss:FontName="Calibri" ss:Size="11" ss:Bold="1" ss:Color="#FFFFFF"/>
+   <Interior ss:Color="#1F4E78" ss:Pattern="Solid"/>
+   <Alignment ss:Horizontal="Center" ss:Vertical="Center"/>
+   <Borders>
+    <Border ss:Position="Bottom" ss:LineStyle="Continuous" ss:Weight="1" ss:Color="#000000"/>
+    <Border ss:Position="Top" ss:LineStyle="Continuous" ss:Weight="1" ss:Color="#000000"/>
+    <Border ss:Position="Left" ss:LineStyle="Continuous" ss:Weight="1" ss:Color="#000000"/>
+    <Border ss:Position="Right" ss:LineStyle="Continuous" ss:Weight="1" ss:Color="#000000"/>
+   </Borders>
+  </Style>
+  <Style ss:ID="DataCell">
+   <Alignment ss:Horizontal="Left" ss:Vertical="Center"/>
+   <Borders>
+    <Border ss:Position="Bottom" ss:LineStyle="Continuous" ss:Weight="1" ss:Color="#D3D3D3"/>
+    <Border ss:Position="Top" ss:LineStyle="Continuous" ss:Weight="1" ss:Color="#D3D3D3"/>
+    <Border ss:Position="Left" ss:LineStyle="Continuous" ss:Weight="1" ss:Color="#D3D3D3"/>
+    <Border ss:Position="Right" ss:LineStyle="Continuous" ss:Weight="1" ss:Color="#D3D3D3"/>
+   </Borders>
+  </Style>
+  <Style ss:ID="HyperlinkCell">
+   <Font ss:FontName="Calibri" ss:Size="11" ss:Color="#0563C1" ss:Underline="Single"/>
+   <Alignment ss:Horizontal="Left" ss:Vertical="Center"/>
+   <Borders>
+    <Border ss:Position="Bottom" ss:LineStyle="Continuous" ss:Weight="1" ss:Color="#D3D3D3"/>
+    <Border ss:Position="Top" ss:LineStyle="Continuous" ss:Weight="1" ss:Color="#D3D3D3"/>
+    <Border ss:Position="Left" ss:LineStyle="Continuous" ss:Weight="1" ss:Color="#D3D3D3"/>
+    <Border ss:Position="Right" ss:LineStyle="Continuous" ss:Weight="1" ss:Color="#D3D3D3"/>
+   </Borders>
+  </Style>
+ </Styles>
+ <Worksheet ss:Name="Team Expenses">
+  <Table>`;
+
+    colWidths.forEach(width => {
+        xml += `\n   <Column ss:Width="${width}"/>`;
+    });
+
+    xml += `\n   <Row ss:Height="40">
+    <Cell ss:MergeAcross="${headers.length - 1}" ss:StyleID="MainTitle">
+     <Data ss:Type="String">SHNOOR - TEAM EXPENSE CLAIMS</Data>
+    </Cell>
+   </Row>
+   <Row ss:Height="25">
+    <Cell ss:MergeAcross="${headers.length - 1}" ss:StyleID="SubTitle">
+     <Data ss:Type="String">Company: Shnoor   |   Exported on: ${new Date().toLocaleDateString()}</Data>
+    </Cell>
+   </Row>
+   <Row ss:Height="15"/>`;
+
+    xml += `\n   <Row ss:Height="25">`;
+    headers.forEach(h => {
+        xml += `\n    <Cell ss:StyleID="TableHeader"><Data ss:Type="String">${escapeXML(h)}</Data></Cell>`;
+    });
+    xml += `\n   </Row>`;
+
+    rows.forEach(row => {
+        xml += `\n   <Row ss:Height="20">`;
+        // Print columns 0 to 5 normally
+        for (let i = 0; i < 6; i++) {
+            xml += `\n    <Cell ss:StyleID="DataCell"><Data ss:Type="String">${escapeXML(row[i])}</Data></Cell>`;
+        }
+        // Last column: Link column
+        const receiptUrl = row[6];
+        if (receiptUrl) {
+            xml += `\n    <Cell ss:StyleID="HyperlinkCell" ss:HRef="${escapeXML(receiptUrl)}"><Data ss:Type="String">View Receipt</Data></Cell>`;
+        } else {
+            xml += `\n    <Cell ss:StyleID="DataCell"><Data ss:Type="String">No Receipt</Data></Cell>`;
+        }
+        xml += `\n   </Row>`;
+    });
+
+    xml += `\n  </Table>
+ </Worksheet>
+</Workbook>`;
+
+    const blob = new Blob([xml], { type: 'application/vnd.ms-excel' });
+    const link = document.createElement("a");
+    if (link.download !== undefined) {
+        const url = URL.createObjectURL(blob);
+        link.setAttribute("href", url);
+        link.setAttribute("download", "team_expense_claims.xls");
         link.style.visibility = 'hidden';
         document.body.appendChild(link);
         link.click();

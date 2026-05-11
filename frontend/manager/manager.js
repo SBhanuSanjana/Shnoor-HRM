@@ -136,6 +136,8 @@ function loadDataForTab(tabId) {
         loadTasks();
     } else if (tabId === 'payroll') {
         loadPayroll();
+    } else if (tabId === 'expenses') {
+        loadAllExpenses();
     } else if (tabId === 'policies') {
         loadPolicies();
     } else if (tabId === 'orgchart') {
@@ -1073,4 +1075,343 @@ function exportProfilesToExcel() {
         link.click();
         document.body.removeChild(link);
     }
+}
+
+
+// --- Manager Expenses Module ---
+let localAllExpenses = [];
+
+async function loadAllExpenses() {
+    const tbody = document.getElementById('mgrExpensesList');
+    if (!tbody) return;
+    tbody.innerHTML = '<tr><td colspan="9" style="text-align:center;">Loading organization expenses...</td></tr>';
+
+    const res = await fetchData('/manager/expenses/');
+    if (!res) {
+        tbody.innerHTML = '<tr><td colspan="9" style="text-align:center; color:var(--text-muted);">Failed to load expense records.</td></tr>';
+        return;
+    }
+
+    localAllExpenses = res;
+    renderAllExpenses(res);
+    loadAllExpenseStats(res);
+}
+
+function renderAllExpenses(data) {
+    const tbody = document.getElementById('mgrExpensesList');
+    if (!tbody) return;
+    tbody.innerHTML = '';
+
+    if (data.length === 0) {
+        tbody.innerHTML = '<tr><td colspan="9" style="text-align:center; color:var(--text-muted); padding: 2rem;">No expense claims found matching filters.</td></tr>';
+        return;
+    }
+
+    data.forEach(exp => {
+        let statusBadge = '';
+        const statusVal = exp.status.toUpperCase();
+        if (statusVal === 'APPROVED') statusBadge = '<span class="status-badge status-present" style="background: rgba(16,185,129,0.15); color: #10b981; padding: 0.25rem 0.6rem; border-radius: 4px; font-size: 0.75rem; font-weight: 600;">Approved</span>';
+        else if (statusVal === 'REJECTED') statusBadge = '<span class="status-badge status-absent" style="background: rgba(244,63,94,0.15); color: #f43f5e; padding: 0.25rem 0.6rem; border-radius: 4px; font-size: 0.75rem; font-weight: 600;">Rejected</span>';
+        else statusBadge = '<span class="status-badge status-pending" style="background: rgba(245,158,11,0.15); color: #f59e0b; padding: 0.25rem 0.6rem; border-radius: 4px; font-size: 0.75rem; font-weight: 600;">Pending</span>';
+
+        let payBadge = '';
+        const payVal = exp.payment_status.toUpperCase();
+        if (payVal === 'PAID') payBadge = '<span style="color: #10b981; font-weight: 600; font-size: 0.75rem;"><i class="fa-solid fa-circle-check"></i> Paid</span>';
+        else payBadge = '<span style="color: #9ca3af; font-weight: 600; font-size: 0.75rem;"><i class="fa-solid fa-circle-dot"></i> Unpaid</span>';
+
+        let receiptLink = '<span style="color:var(--text-muted); font-size:0.85rem;"><i class="fa-solid fa-ban"></i> None</span>';
+        if (exp.receipt) {
+            const fileUrl = exp.receipt.startsWith('http') ? exp.receipt : `http://127.0.0.1:8000${exp.receipt}`;
+            receiptLink = `<a href="${fileUrl}" target="_blank" style="color: var(--primary); text-decoration: none; font-weight: 500; font-size: 0.85rem;"><i class="fa-solid fa-arrow-up-right-from-square"></i> View</a>`;
+        }
+
+        let actionBtn = '-';
+        if (statusVal === 'PENDING') {
+            actionBtn = `<button class="btn btn-primary" style="padding: 0.25rem 0.6rem; font-size: 0.75rem; margin-right: 0.5rem;" onclick="openMgrReviewModal(${exp.id}, '${escapeJS(exp.employee_name)}', ${exp.amount}, '${escapeJS(exp.category)}', '${escapeJS(exp.submitted_at_str)}')"><i class="fa-solid fa-gavel"></i> Review</button>`;
+        } else if (statusVal === 'APPROVED' && payVal === 'UNPAID') {
+            actionBtn = `<button class="btn btn-ghost" style="padding: 0.25rem 0.6rem; font-size: 0.75rem; color: #10b981; border-color: #10b981;" onclick="openMgrPayModal(${exp.id}, '${escapeJS(exp.employee_name)}', ${exp.amount}, '${escapeJS(exp.category)}', '${escapeJS(exp.submitted_at_str)}')"><i class="fa-solid fa-wallet"></i> Pay</button>`;
+        }
+
+        tbody.innerHTML += `
+            <tr>
+                <td style="font-weight: 600; color:#fff;">${escapeHTML(exp.employee_name)}</td>
+                <td>${exp.submitted_at_str || '-'}</td>
+                <td style="font-weight: 500;">${escapeHTML(exp.title)}</td>
+                <td>${escapeHTML(exp.category)}</td>
+                <td style="font-weight: 600; color: #fff;">₹${parseFloat(exp.amount).toFixed(2)}</td>
+                <td>${statusBadge}</td>
+                <td>${payBadge}</td>
+                <td>${receiptLink}</td>
+                <td>${actionBtn}</td>
+            </tr>
+        `;
+    });
+}
+
+function loadAllExpenseStats(data) {
+    let total = 0;
+    let paid = 0;
+    let pending = 0;
+    let rejected = 0;
+
+    data.forEach(exp => {
+        const amt = parseFloat(exp.amount) || 0;
+        const stat = exp.status.toUpperCase();
+        const pStat = exp.payment_status.toUpperCase();
+
+        total += amt;
+        if (stat === 'PENDING') pending += amt;
+        else if (stat === 'REJECTED') rejected += amt;
+        
+        if (pStat === 'PAID') paid += amt;
+    });
+
+    document.getElementById('mgr-exp-total').innerText = `₹${total.toLocaleString('en-IN', { minimumFractionDigits: 2, maximumFractionDigits: 2 })}`;
+    document.getElementById('mgr-exp-paid').innerText = `₹${paid.toLocaleString('en-IN', { minimumFractionDigits: 2, maximumFractionDigits: 2 })}`;
+    document.getElementById('mgr-exp-pending').innerText = `₹${pending.toLocaleString('en-IN', { minimumFractionDigits: 2, maximumFractionDigits: 2 })}`;
+    document.getElementById('mgr-exp-rejected').innerText = `₹${rejected.toLocaleString('en-IN', { minimumFractionDigits: 2, maximumFractionDigits: 2 })}`;
+}
+
+async function filterAllExpenses() {
+    const searchVal = document.getElementById('mgrExpenseSearch').value.toLowerCase();
+    const statusVal = document.getElementById('mgrFilterStatus').value;
+    const paymentVal = document.getElementById('mgrFilterPayment').value;
+
+    let query = `?search=${encodeURIComponent(searchVal)}`;
+    if (statusVal !== 'ALL') query += `&status=${statusVal}`;
+    if (paymentVal !== 'ALL') query += `&payment_status=${paymentVal}`;
+
+    const res = await fetchData(`/manager/expenses/${query}`);
+    if (res) {
+        renderAllExpenses(res);
+    }
+}
+
+function clearMgrExpenseFilters() {
+    document.getElementById('mgrExpenseSearch').value = '';
+    document.getElementById('mgrFilterStatus').value = 'ALL';
+    document.getElementById('mgrFilterPayment').value = 'ALL';
+    loadAllExpenses();
+}
+
+function openMgrReviewModal(id, employeeName, amount, category, date) {
+    const modal = document.getElementById('mgrReviewModal');
+    if (modal) {
+        modal.style.display = 'flex';
+        document.getElementById('mgrReviewExpenseId').value = id;
+        document.getElementById('mgrReviewRemark').value = '';
+        
+        document.getElementById('mgr-review-info').innerHTML = `
+            <div><strong style="color: var(--text-muted); font-size: 0.85rem;">Employee:</strong> <span style="font-weight: 600; color: #fff;">${escapeHTML(employeeName)}</span></div>
+            <div><strong style="color: var(--text-muted); font-size: 0.85rem;">Amount:</strong> <span style="font-weight: 600; color: var(--primary);">₹${parseFloat(amount).toFixed(2)}</span></div>
+            <div><strong style="color: var(--text-muted); font-size: 0.85rem;">Category:</strong> <span>${escapeHTML(category)}</span></div>
+            <div><strong style="color: var(--text-muted); font-size: 0.85rem;">Submitted Date:</strong> <span>${escapeHTML(date)}</span></div>
+        `;
+    }
+}
+
+function closeMgrReviewModal() {
+    const modal = document.getElementById('mgrReviewModal');
+    if (modal) modal.style.display = 'none';
+}
+
+async function submitManagerDecision(event, decision) {
+    if (event) event.preventDefault();
+
+    const id = document.getElementById('mgrReviewExpenseId').value;
+    const remark = document.getElementById('mgrReviewRemark').value;
+
+    if (!remark) {
+        alert('Please provide a review remark.');
+        return;
+    }
+
+    const res = await fetchData('/manager/expenses/approve/', {
+        method: 'POST',
+        body: JSON.stringify({
+            expense_id: id,
+            status: decision,
+            remark: remark
+        })
+    });
+
+    if (res) {
+        alert(`Expense claim successfully ${decision.toLowerCase()}!`);
+        closeMgrReviewModal();
+        loadAllExpenses();
+    } else {
+        alert('Failed to save manager review decision.');
+    }
+}
+
+function openMgrPayModal(id, employeeName, amount, category, date) {
+    const modal = document.getElementById('mgrPayModal');
+    if (modal) {
+        modal.style.display = 'flex';
+        document.getElementById('mgrPayExpenseId').value = id;
+        document.getElementById('mgrPayRemark').value = '';
+        
+        document.getElementById('mgr-pay-info').innerHTML = `
+            <div><strong style="color: var(--text-muted); font-size: 0.85rem;">Employee:</strong> <span style="font-weight: 600; color: #fff;">${escapeHTML(employeeName)}</span></div>
+            <div><strong style="color: var(--text-muted); font-size: 0.85rem;">Amount:</strong> <span style="font-weight: 600; color: var(--primary);">₹${parseFloat(amount).toFixed(2)}</span></div>
+            <div><strong style="color: var(--text-muted); font-size: 0.85rem;">Category:</strong> <span>${escapeHTML(category)}</span></div>
+            <div><strong style="color: var(--text-muted); font-size: 0.85rem;">Approved Date:</strong> <span>${escapeHTML(date)}</span></div>
+        `;
+    }
+}
+
+function closeMgrPayModal() {
+    const modal = document.getElementById('mgrPayModal');
+    if (modal) modal.style.display = 'none';
+}
+
+async function submitManagerPayment(event) {
+    if (event) event.preventDefault();
+
+    const id = document.getElementById('mgrPayExpenseId').value;
+    const remark = document.getElementById('mgrPayRemark').value;
+
+    const res = await fetchData('/manager/expenses/pay/', {
+        method: 'POST',
+        body: JSON.stringify({
+            expense_id: id,
+            payment_status: 'PAID',
+            remark: remark
+        })
+    });
+
+    if (res) {
+        alert('Disbursement successfully marked as Paid!');
+        closeMgrPayModal();
+        loadAllExpenses();
+    } else {
+        alert('Failed to update payout settlement.');
+    }
+}
+
+function exportExpensesToExcel() {
+    const today = new Date().toLocaleDateString('en-US', { year: 'numeric', month: 'long', day: 'numeric' });
+    
+    let xml = `<?xml version="1.0"?>
+<?mso-application ss:Name="Excel"?>
+<Workbook xmlns="urn:schemas-microsoft-com:office:spreadsheet"
+ xmlns:o="urn:schemas-microsoft-com:office:office"
+ xmlns:x="urn:schemas-microsoft-com:office:excel"
+ xmlns:ss="urn:schemas-microsoft-com:office:spreadsheet"
+ xmlns:html="http://www.w3.org/TR/REC-html40">
+ <Styles>
+  <Style ss:ID="Default" ss:Name="Normal">
+   <Alignment ss:Vertical="Bottom"/>
+   <Borders/>
+   <Font ss:FontName="Calibri" x:Family="Swiss" ss:Size="11" ss:Color="#000000"/>
+   <Interior/>
+   <NumberFormat/>
+   <Protection/>
+  </Style>
+  <Style ss:ID="HeaderStyle">
+   <Alignment ss:Horizontal="Center" ss:Vertical="Center"/>
+   <Font ss:FontName="Calibri" x:Family="Swiss" ss:Size="16" ss:Bold="1" ss:Color="#1F4E78"/>
+   <Interior ss:Color="#D9E1F2" ss:Pattern="Solid"/>
+  </Style>
+  <Style ss:ID="SubHeaderStyle">
+   <Alignment ss:Horizontal="Left" ss:Vertical="Center"/>
+   <Font ss:FontName="Calibri" x:Family="Swiss" ss:Size="10" ss:Italic="1" ss:Color="#595959"/>
+  </Style>
+  <Style ss:ID="TableHeader">
+   <Alignment ss:Horizontal="Center" ss:Vertical="Center"/>
+   <Borders>
+    <Border ss:Position="Bottom" ss:LineStyle="Continuous" ss:Weight="2" ss:Color="#4F81BD"/>
+    <Border ss:Position="Top" ss:LineStyle="Continuous" ss:Weight="1" ss:Color="#4F81BD"/>
+   </Borders>
+   <Font ss:FontName="Calibri" x:Family="Swiss" ss:Size="11" ss:Bold="1" ss:Color="#FFFFFF"/>
+   <Interior ss:Color="#4F81BD" ss:Pattern="Solid"/>
+  </Style>
+  <Style ss:ID="DataCell">
+   <Alignment ss:Vertical="Center"/>
+   <Borders>
+    <Border ss:Position="Bottom" ss:LineStyle="Continuous" ss:Weight="1" ss:Color="#D9D9D9"/>
+   </Borders>
+   <Font ss:FontName="Calibri" x:Family="Swiss" ss:Size="10"/>
+  </Style>
+  <Style ss:ID="AmountCell">
+   <Alignment ss:Horizontal="Right" ss:Vertical="Center"/>
+   <Borders>
+    <Border ss:Position="Bottom" ss:LineStyle="Continuous" ss:Weight="1" ss:Color="#D9D9D9"/>
+   </Borders>
+   <Font ss:FontName="Calibri" x:Family="Swiss" ss:Size="10" ss:Bold="1"/>
+  </Style>
+ </Styles>
+ <Worksheet ss:Name="Expenses Log">
+  <Table ss:ExpandedColumnCount="7" x:FullColumns="1" x:FullRows="1">
+   <Column ss:Width="120"/>
+   <Column ss:Width="100"/>
+   <Column ss:Width="180"/>
+   <Column ss:Width="110"/>
+   <Column ss:Width="90"/>
+   <Column ss:Width="90"/>
+   <Column ss:Width="90"/>
+   
+   <Row ss:Height="35">
+    <Cell ss:MergeAcross="6" ss:StyleID="HeaderStyle"><Data ss:Type="String">SHNOOR HRMS - FINANCIAL EXPENSES LOG</Data></Cell>
+   </Row>
+   <Row ss:Height="20">
+    <Cell ss:MergeAcross="6" ss:StyleID="SubHeaderStyle"><Data ss:Type="String">Export Date: ${today} | Generated via Corporate Manager Module</Data></Cell>
+   </Row>
+   <Row ss:Height="10"/>
+   
+   <Row ss:Height="25">
+    <Cell ss:StyleID="TableHeader"><Data ss:Type="String">Employee Name</Data></Cell>
+    <Cell ss:StyleID="TableHeader"><Data ss:Type="String">Submitted Date</Data></Cell>
+    <Cell ss:StyleID="TableHeader"><Data ss:Type="String">Title / Merchant</Data></Cell>
+    <Cell ss:StyleID="TableHeader"><Data ss:Type="String">Category</Data></Cell>
+    <Cell ss:StyleID="TableHeader"><Data ss:Type="String">Amount</Data></Cell>
+    <Cell ss:StyleID="TableHeader"><Data ss:Type="String">Status</Data></Cell>
+    <Cell ss:StyleID="TableHeader"><Data ss:Type="String">Payment Status</Data></Cell>
+   </Row>`;
+
+    localAllExpenses.forEach(exp => {
+        xml += `\n   <Row ss:Height="20">
+    <Cell ss:StyleID="DataCell"><Data ss:Type="String">${escapeXML(exp.employee_name)}</Data></Cell>
+    <Cell ss:StyleID="DataCell"><Data ss:Type="String">${escapeXML(exp.submitted_at_str)}</Data></Cell>
+    <Cell ss:StyleID="DataCell"><Data ss:Type="String">${escapeXML(exp.title)}</Data></Cell>
+    <Cell ss:StyleID="DataCell"><Data ss:Type="String">${escapeXML(exp.category)}</Data></Cell>
+    <Cell ss:StyleID="AmountCell"><Data ss:Type="String">₹${parseFloat(exp.amount).toFixed(2)}</Data></Cell>
+    <Cell ss:StyleID="DataCell"><Data ss:Type="String">${escapeXML(exp.status)}</Data></Cell>
+    <Cell ss:StyleID="DataCell"><Data ss:Type="String">${escapeXML(exp.payment_status)}</Data></Cell>
+   </Row>`;
+    });
+
+    xml += `\n  </Table>
+ </Worksheet>
+</Workbook>`;
+
+    const blob = new Blob([xml], { type: 'application/vnd.ms-excel' });
+    const link = document.createElement("a");
+    if (link.download !== undefined) {
+        const url = URL.createObjectURL(blob);
+        link.setAttribute("href", url);
+        link.setAttribute("download", `shnoor_corporate_expenses_${new Date().toLocaleDateString('en-CA')}.xls`);
+        link.style.visibility = 'hidden';
+        document.body.appendChild(link);
+        link.click();
+        document.body.removeChild(link);
+    }
+}
+
+// Escaping helpers
+function escapeHTML(str) {
+    if (!str) return '';
+    return str.toString()
+        .replace(/&/g, "&amp;")
+        .replace(/</g, "&lt;")
+        .replace(/>/g, "&gt;")
+        .replace(/"/g, "&quot;")
+        .replace(/'/g, "&#039;");
+}
+
+function escapeJS(str) {
+    if (!str) return '';
+    return str.toString()
+        .replace(/'/g, "\\'")
+        .replace(/"/g, '\\"');
 }

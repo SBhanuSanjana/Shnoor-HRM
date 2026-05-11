@@ -1608,52 +1608,141 @@
         <section id="expenses" class="view-section">
             <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 2rem;">
                 <h2 class="gradient-text">My Expenses</h2>
-                <button class="btn btn-primary" style="padding: 0.5rem 1rem;" onclick="document.getElementById('expense-form-container').style.display='block'">Claim Expense</button>
+                <button class="btn btn-primary" style="padding: 0.5rem 1rem;" onclick="openAddExpenseModal()"><i class="fa-solid fa-plus"></i> Claim Expense</button>
             </div>
 
-            <div id="expense-form-container" class="glass-panel" style="display:none; margin-bottom: 2rem; padding: 1.5rem;">
-                <h4 style="margin-bottom: 1rem;">Submit Expense Claim</h4>
-                <form id="applyExpenseForm" style="display: flex; gap: 1rem; align-items: flex-end; flex-wrap: wrap;">
-                    <div class="form-group" style="flex: 1; min-width: 150px; margin-bottom: 0;">
-                        <label>Category</label>
-                        <select id="expenseCategory" class="form-control" required style="width:100%; padding:0.75rem; border-radius:8px; border:1px solid var(--glass-border); background:var(--bg-navy); color:#fff;">
-                            <option value="Travel">Travel</option>
-                            <option value="Meals">Meals</option>
-                            <option value="Supplies">Supplies</option>
-                            <option value="Other">Other</option>
+            <!-- Top Summary Cards -->
+            <div class="dashboard-grid" style="margin-bottom: 2rem; display: grid; grid-template-columns: repeat(auto-fit, minmax(180px, 1fr)); gap: 1.5rem;">
+                <div class="glass-panel" style="padding: 1.25rem; text-align: center;">
+                    <p style="color:var(--text-muted); font-size: 0.85rem; text-transform: uppercase; font-weight: 600;">Total Applied</p>
+                    <h2 id="exp-total-applied" style="font-size:1.75rem; color:#fff; margin-top:0.5rem;">₹0.00</h2>
+                </div>
+                <div class="glass-panel" style="padding: 1.25rem; text-align: center;">
+                    <p style="color:#10b981; font-size: 0.85rem; text-transform: uppercase; font-weight: 600;">Total Approved</p>
+                    <h2 id="exp-total-approved" style="font-size:1.75rem; color:#10b981; margin-top:0.5rem;">₹0.00</h2>
+                </div>
+                <div class="glass-panel" style="padding: 1.25rem; text-align: center;">
+                    <p style="color:#f43f5e; font-size: 0.85rem; text-transform: uppercase; font-weight: 600;">Total Rejected</p>
+                    <h2 id="exp-total-rejected" style="font-size:1.75rem; color:#f43f5e; margin-top:0.5rem;">₹0.00</h2>
+                </div>
+                <div class="glass-panel" style="padding: 1.25rem; text-align: center;">
+                    <p style="color:#f59e0b; font-size: 0.85rem; text-transform: uppercase; font-weight: 600;">Total Pending</p>
+                    <h2 id="exp-total-pending" style="font-size:1.75rem; color:#f59e0b; margin-top:0.5rem;">₹0.00</h2>
+                </div>
+                <div class="glass-panel" style="padding: 1.25rem; text-align: center;">
+                    <p style="color:var(--primary); font-size: 0.85rem; text-transform: uppercase; font-weight: 600;">Available Balance</p>
+                    <h2 id="exp-avail-balance" style="font-size:1.75rem; color:var(--primary); margin-top:0.5rem;">₹50,000.00</h2>
+                </div>
+            </div>
+
+            <!-- Search and Filter Panel -->
+            <div class="glass-panel" style="padding: 1.5rem; margin-bottom: 2rem;">
+                <div style="display: flex; gap: 1rem; align-items: flex-end; flex-wrap: wrap;">
+                    <div style="flex: 2; min-width: 200px;">
+                        <label style="display:block; margin-bottom:0.5rem; font-size:0.85rem; color:var(--text-muted);">Search title/description</label>
+                        <div style="position:relative;">
+                            <input type="text" id="expenseSearch" class="form-control" placeholder="Search claims..." oninput="filterExpenses()" style="width:100%; padding:0.75rem 0.75rem 0.75rem 2.2rem; border-radius:8px; border:1px solid var(--glass-border); background:var(--bg-navy); color:#fff;">
+                            <i class="fa-solid fa-search" style="position:absolute; left:10px; top:50%; transform:translateY(-50%); color:var(--text-muted);"></i>
+                        </div>
+                    </div>
+                    <div style="flex: 1; min-width: 120px;">
+                        <label style="display:block; margin-bottom:0.5rem; font-size:0.85rem; color:var(--text-muted);">Status</label>
+                        <select id="filterStatus" class="form-control" onchange="filterExpenses()" style="width:100%; padding:0.75rem; border-radius:8px; border:1px solid var(--glass-border); background:var(--bg-navy); color:#fff;">
+                            <option value="ALL">All Statuses</option>
+                            <option value="PENDING">Pending</option>
+                            <option value="APPROVED">Approved</option>
+                            <option value="REJECTED">Rejected</option>
+                            <option value="DRAFT">Draft</option>
                         </select>
                     </div>
-                    <div class="form-group" style="flex: 1; min-width: 150px; margin-bottom: 0;">
-                        <label>Date</label>
-                        <input type="date" id="expenseDate" class="form-control" required style="width:100%; padding:0.75rem; border-radius:8px; border:1px solid var(--glass-border); background:var(--bg-navy); color:#fff;">
+                    <div style="flex: 1; min-width: 120px;">
+                        <label style="display:block; margin-bottom:0.5rem; font-size:0.85rem; color:var(--text-muted);">Payment</label>
+                        <select id="filterPayment" class="form-control" onchange="filterExpenses()" style="width:100%; padding:0.75rem; border-radius:8px; border:1px solid var(--glass-border); background:var(--bg-navy); color:#fff;">
+                            <option value="ALL">All Payments</option>
+                            <option value="PAID">Paid</option>
+                            <option value="UNPAID">Unpaid</option>
+                        </select>
                     </div>
-                    <div class="form-group" style="flex: 1; min-width: 150px; margin-bottom: 0;">
-                        <label>Amount (₹)</label>
-                        <input type="number" step="0.01" id="expenseAmount" class="form-control" required style="width:100%; padding:0.75rem; border-radius:8px; border:1px solid var(--glass-border); background:var(--bg-navy); color:#fff;" placeholder="0.00">
+                    <div style="flex: 1.2; min-width: 140px;">
+                        <label style="display:block; margin-bottom:0.5rem; font-size:0.85rem; color:var(--text-muted);">Start Date</label>
+                        <input type="date" id="filterStartDate" class="form-control" onchange="filterExpenses()" style="width:100%; padding:0.75rem; border-radius:8px; border:1px solid var(--glass-border); background:var(--bg-navy); color:#fff;">
                     </div>
-                    <div class="form-group" style="flex: 2; min-width: 250px; margin-bottom: 0;">
-                        <label>Description</label>
-                        <input type="text" id="expenseDesc" class="form-control" required style="width:100%; padding:0.75rem; border-radius:8px; border:1px solid var(--glass-border); background:var(--bg-navy); color:#fff;" placeholder="Brief details">
+                    <div style="flex: 1.2; min-width: 140px;">
+                        <label style="display:block; margin-bottom:0.5rem; font-size:0.85rem; color:var(--text-muted);">End Date</label>
+                        <input type="date" id="filterEndDate" class="form-control" onchange="filterExpenses()" style="width:100%; padding:0.75rem; border-radius:8px; border:1px solid var(--glass-border); background:var(--bg-navy); color:#fff;">
                     </div>
-                    <button type="submit" class="btn btn-primary" style="padding: 0.75rem 1.5rem;">Submit</button>
-                    <button type="button" class="btn btn-ghost" style="padding: 0.75rem 1.5rem;" onclick="document.getElementById('expense-form-container').style.display='none'">Cancel</button>
-                </form>
+                    <div>
+                        <button class="btn btn-ghost" onclick="clearExpenseFilters()" style="padding: 0.75rem 1.2rem; height: 44px;"><i class="fa-solid fa-rotate-left"></i> Reset</button>
+                    </div>
+                </div>
             </div>
 
+            <!-- Table Section -->
             <div class="table-container">
                 <table>
                     <thead>
                         <tr>
                             <th>Date</th>
+                            <th>Title</th>
                             <th>Category</th>
                             <th>Amount</th>
                             <th>Status</th>
+                            <th>Payment</th>
+                            <th>Remarks</th>
+                            <th>Receipt</th>
                         </tr>
                     </thead>
                     <tbody id="expensesList">
                         <!-- Populated dynamically -->
                     </tbody>
                 </table>
+            </div>
+
+            <!-- Custom Modal: Add Expense Claim -->
+            <div id="add-expense-modal" class="modal-overlay" style="display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.6); backdrop-filter: blur(5px); z-index: 1000; align-items: center; justify-content: center;">
+                <div class="glass-panel" style="width: 100%; max-width: 600px; padding: 2rem; position: relative;">
+                    <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 1.5rem;">
+                        <h3 class="gradient-text"><i class="fa-solid fa-receipt"></i> Submit Expense Claim</h3>
+                        <button onclick="closeAddExpenseModal()" style="background: none; border: none; color: #fff; font-size: 1.5rem; cursor: pointer;"><i class="fa-solid fa-times"></i></button>
+                    </div>
+                    <form id="applyExpenseForm" onsubmit="submitExpenseClaim(event)">
+                        <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 1rem; margin-bottom: 1.25rem;">
+                            <div class="form-group">
+                                <label style="display:block; margin-bottom:0.5rem; font-size:0.85rem;">Title/Merchant</label>
+                                <input type="text" id="expenseTitle" class="form-control" placeholder="e.g., Uber Ride" required style="width:100%; padding:0.75rem; border-radius:8px; border:1px solid var(--glass-border); background:var(--bg-navy); color:#fff;">
+                            </div>
+                            <div class="form-group">
+                                <label style="display:block; margin-bottom:0.5rem; font-size:0.85rem;">Category</label>
+                                <select id="expenseCategory" class="form-control" required style="width:100%; padding:0.75rem; border-radius:8px; border:1px solid var(--glass-border); background:var(--bg-navy); color:#fff;">
+                                    <option value="Travel">Travel</option>
+                                    <option value="Meals">Meals</option>
+                                    <option value="Supplies">Supplies</option>
+                                    <option value="Software">Software</option>
+                                    <option value="Other">Other</option>
+                                </select>
+                            </div>
+                        </div>
+                        <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 1rem; margin-bottom: 1.25rem;">
+                            <div class="form-group">
+                                <label style="display:block; margin-bottom:0.5rem; font-size:0.85rem;">Amount (₹)</label>
+                                <input type="number" step="0.01" id="expenseAmount" class="form-control" placeholder="0.00" required style="width:100%; padding:0.75rem; border-radius:8px; border:1px solid var(--glass-border); background:var(--bg-navy); color:#fff;">
+                            </div>
+                            <div class="form-group">
+                                <label style="display:block; margin-bottom:0.5rem; font-size:0.85rem;">Receipt File (Bill)</label>
+                                <input type="file" id="expenseReceipt" class="form-control" style="width:100%; padding:0.5rem; border-radius:8px; border:1px solid var(--glass-border); background:var(--bg-navy); color:#fff;">
+                            </div>
+                        </div>
+                        <div class="form-group" style="margin-bottom: 1.5rem;">
+                            <label style="display:block; margin-bottom:0.5rem; font-size:0.85rem;">Description / Remarks</label>
+                            <textarea id="expenseDesc" class="form-control" placeholder="Provide extra details..." rows="3" style="width:100%; padding:0.75rem; border-radius:8px; border:1px solid var(--glass-border); background:var(--bg-navy); color:#fff; resize: vertical;"></textarea>
+                        </div>
+                        <div style="display: flex; justify-content: flex-end; gap: 1rem;">
+                            <button type="button" class="btn btn-ghost" onclick="closeAddExpenseModal()">Cancel</button>
+                            <button type="button" class="btn btn-ghost" onclick="submitExpenseClaim(event, true)" style="border-color: var(--text-muted); color: var(--text-muted);"><i class="fa-solid fa-floppy-disk"></i> Save Draft</button>
+                            <button type="submit" class="btn btn-primary"><i class="fa-solid fa-paper-plane"></i> Submit Claim</button>
+                        </div>
+                    </form>
+                </div>
             </div>
         </section>
 

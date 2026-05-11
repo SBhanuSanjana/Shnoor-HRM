@@ -27,6 +27,7 @@
         <div class="nav-item self-only" data-target="profile"><i class="fa-solid fa-user"></i> Profile</div>
         <div class="nav-item manager-only" data-target="payroll"><i class="fa-solid fa-file-invoice-dollar"></i> Payroll
         </div>
+        <div class="nav-item manager-only" data-target="expenses"><i class="fa-solid fa-wallet"></i> Expenses</div>
         <div class="nav-item" data-target="orgchart"><i class="fa-solid fa-sitemap"></i> Org Chart</div>
         <div class="nav-item" data-target="notifications"><i class="fa-solid fa-bell"></i> Notifications</div>
 
@@ -2163,7 +2164,138 @@
             </div>
         </section>
 
+        <!-- View: Expenses -->
+        <section id="expenses" class="view-section">
+            <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 2rem;">
+                <h2 class="gradient-text">Organizational Expense & Approvals</h2>
+                <button class="btn btn-primary" onclick="exportExpensesToExcel()" style="padding: 0.5rem 1rem;"><i class="fa-solid fa-file-excel"></i> Export Financial Log</button>
+            </div>
+
+            <!-- Corporate Metrics -->
+            <div class="dashboard-grid" style="margin-bottom: 2rem; display: grid; grid-template-columns: repeat(auto-fit, minmax(220px, 1fr)); gap: 1.5rem;">
+                <div class="glass-panel" style="padding: 1.25rem; text-align: center;">
+                    <p style="color:var(--text-muted); font-size: 0.85rem; text-transform: uppercase; font-weight: 600;">Corporate Total Applied</p>
+                    <h2 id="mgr-exp-total" style="font-size:1.75rem; color:#fff; margin-top:0.5rem;">₹0.00</h2>
+                </div>
+                <div class="glass-panel" style="padding: 1.25rem; text-align: center;">
+                    <p style="color:#10b981; font-size: 0.85rem; text-transform: uppercase; font-weight: 600;">Total Cleared (Paid)</p>
+                    <h2 id="mgr-exp-paid" style="font-size:1.75rem; color:#10b981; margin-top:0.5rem;">₹0.00</h2>
+                </div>
+                <div class="glass-panel" style="padding: 1.25rem; text-align: center;">
+                    <p style="color:#f59e0b; font-size: 0.85rem; text-transform: uppercase; font-weight: 600;">Pending Actions</p>
+                    <h2 id="mgr-exp-pending" style="font-size:1.75rem; color:#f59e0b; margin-top:0.5rem;">₹0.00</h2>
+                </div>
+                <div class="glass-panel" style="padding: 1.25rem; text-align: center;">
+                    <p style="color:#f43f5e; font-size: 0.85rem; text-transform: uppercase; font-weight: 600;">Rejected Claims</p>
+                    <h2 id="mgr-exp-rejected" style="font-size:1.75rem; color:#f43f5e; margin-top:0.5rem;">₹0.00</h2>
+                </div>
+            </div>
+
+            <!-- Search and Filter Panel -->
+            <div class="glass-panel" style="padding: 1.5rem; margin-bottom: 2rem;">
+                <div style="display: flex; gap: 1rem; align-items: flex-end; flex-wrap: wrap;">
+                    <div style="flex: 2; min-width: 250px;">
+                        <label style="display:block; margin-bottom:0.5rem; font-size:0.85rem; color:var(--text-muted);">Search Employee Name/Title</label>
+                        <div style="position:relative;">
+                            <input type="text" id="mgrExpenseSearch" class="form-control" placeholder="Search claims..." oninput="filterAllExpenses()" style="width:100%; padding:0.75rem 0.75rem 0.75rem 2.2rem; border-radius:8px; border:1px solid var(--glass-border); background:var(--bg-navy); color:#fff;">
+                            <i class="fa-solid fa-search" style="position:absolute; left:10px; top:50%; transform:translateY(-50%); color:var(--text-muted);"></i>
+                        </div>
+                    </div>
+                    <div style="flex: 1; min-width: 150px;">
+                        <label style="display:block; margin-bottom:0.5rem; font-size:0.85rem; color:var(--text-muted);">Status</label>
+                        <select id="mgrFilterStatus" class="form-control" onchange="filterAllExpenses()" style="width:100%; padding:0.75rem; border-radius:8px; border:1px solid var(--glass-border); background:var(--bg-navy); color:#fff;">
+                            <option value="ALL">All Statuses</option>
+                            <option value="PENDING">Pending</option>
+                            <option value="APPROVED">Approved</option>
+                            <option value="REJECTED">Rejected</option>
+                        </select>
+                    </div>
+                    <div style="flex: 1; min-width: 150px;">
+                        <label style="display:block; margin-bottom:0.5rem; font-size:0.85rem; color:var(--text-muted);">Payment</label>
+                        <select id="mgrFilterPayment" class="form-control" onchange="filterAllExpenses()" style="width:100%; padding:0.75rem; border-radius:8px; border:1px solid var(--glass-border); background:var(--bg-navy); color:#fff;">
+                            <option value="ALL">All Payments</option>
+                            <option value="PAID">Paid</option>
+                            <option value="UNPAID">Unpaid</option>
+                        </select>
+                    </div>
+                    <div>
+                        <button class="btn btn-ghost" onclick="clearMgrExpenseFilters()" style="padding: 0.75rem 1.2rem; height: 44px;"><i class="fa-solid fa-rotate-left"></i> Reset</button>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Table of Expenses -->
+            <div class="table-container">
+                <table>
+                    <thead>
+                        <tr>
+                            <th>Employee</th>
+                            <th>Submitted Date</th>
+                            <th>Title/Merchant</th>
+                            <th>Category</th>
+                            <th>Amount</th>
+                            <th>Status</th>
+                            <th>Payment</th>
+                            <th>Receipt</th>
+                            <th>Action</th>
+                        </tr>
+                    </thead>
+                    <tbody id="mgrExpensesList">
+                        <!-- Populated dynamically -->
+                    </tbody>
+                </table>
+            </div>
+        </section>
     </main>
+
+    <!-- Modal: Manager Review Decision -->
+    <div id="mgrReviewModal" class="modal" style="display: none;">
+        <div class="modal-content glass-panel" style="max-width: 500px;">
+            <div style="display: flex; justify-content: space-between; align-items: center; border-bottom: 1px solid var(--glass-border); padding-bottom: 1rem; margin-bottom: 1.5rem;">
+                <h3 class="gradient-text" style="font-weight: 600;">Manager Review</h3>
+                <span class="close-btn" onclick="closeMgrReviewModal()" style="cursor: pointer; font-size: 1.5rem;"><i class="fa-solid fa-xmark"></i></span>
+            </div>
+            <div id="mgr-review-info" style="margin-bottom: 1.5rem; display: flex; flex-direction: column; gap: 0.5rem; background: rgba(255,255,255,0.03); padding: 1rem; border-radius: 8px;">
+                <!-- Filled dynamically -->
+            </div>
+            <form id="mgrReviewForm" onsubmit="submitManagerDecision(event)">
+                <input type="hidden" id="mgrReviewExpenseId">
+                <div class="form-group" style="margin-bottom: 1.5rem;">
+                    <label style="display:block; margin-bottom:0.5rem; font-size:0.85rem;">Review Remark</label>
+                    <textarea id="mgrReviewRemark" class="form-control" placeholder="Enter reason..." rows="3" required style="width:100%; padding:0.75rem; border-radius:8px; border:1px solid var(--glass-border); background:var(--bg-navy); color:#fff; resize: vertical;"></textarea>
+                </div>
+                <div style="display: flex; justify-content: flex-end; gap: 1rem;">
+                    <button type="button" class="btn btn-ghost" onclick="closeMgrReviewModal()">Cancel</button>
+                    <button type="button" class="btn btn-primary" onclick="submitManagerDecision(event, 'REJECTED')" style="background: #f43f5e; border-color: #f43f5e;"><i class="fa-solid fa-ban"></i> Reject</button>
+                    <button type="submit" class="btn btn-primary" onclick="submitManagerDecision(event, 'APPROVED')"><i class="fa-solid fa-check"></i> Approve</button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <!-- Modal: Manager Pay Clear Settlement -->
+    <div id="mgrPayModal" class="modal" style="display: none;">
+        <div class="modal-content glass-panel" style="max-width: 500px;">
+            <div style="display: flex; justify-content: space-between; align-items: center; border-bottom: 1px solid var(--glass-border); padding-bottom: 1rem; margin-bottom: 1.5rem;">
+                <h3 class="gradient-text" style="font-weight: 600;">Settle Payout</h3>
+                <span class="close-btn" onclick="closeMgrPayModal()" style="cursor: pointer; font-size: 1.5rem;"><i class="fa-solid fa-xmark"></i></span>
+            </div>
+            <div id="mgr-pay-info" style="margin-bottom: 1.5rem; display: flex; flex-direction: column; gap: 0.5rem; background: rgba(255,255,255,0.03); padding: 1rem; border-radius: 8px;">
+                <!-- Filled dynamically -->
+            </div>
+            <form id="mgrPayForm" onsubmit="submitManagerPayment(event)">
+                <input type="hidden" id="mgrPayExpenseId">
+                <div class="form-group" style="margin-bottom: 1.5rem;">
+                    <label style="display:block; margin-bottom:0.5rem; font-size:0.85rem;">Disbursement Remark</label>
+                    <textarea id="mgrPayRemark" class="form-control" placeholder="Optional settlement remark..." rows="3" style="width:100%; padding:0.75rem; border-radius:8px; border:1px solid var(--glass-border); background:var(--bg-navy); color:#fff; resize: vertical;"></textarea>
+                </div>
+                <div style="display: flex; justify-content: flex-end; gap: 1rem;">
+                    <button type="button" class="btn btn-ghost" onclick="closeMgrPayModal()">Cancel</button>
+                    <button type="submit" class="btn btn-primary"><i class="fa-solid fa-wallet"></i> Settle & Mark Paid</button>
+                </div>
+            </form>
+        </div>
+    </div>
 
     <script src="manager.js?v=9"></script>
 </body>

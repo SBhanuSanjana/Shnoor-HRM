@@ -683,3 +683,200 @@ async function loadNotifications() {
         `;
     });
 }
+
+
+// --- Expenses Module ---
+let localExpensesData = [];
+
+function openAddExpenseModal() {
+    const modal = document.getElementById('add-expense-modal');
+    if (modal) {
+        modal.style.display = 'flex';
+        document.getElementById('applyExpenseForm').reset();
+    }
+}
+
+function closeAddExpenseModal() {
+    const modal = document.getElementById('add-expense-modal');
+    if (modal) modal.style.display = 'none';
+}
+
+async function loadExpenses() {
+    const tbody = document.getElementById('expensesList');
+    if (!tbody) return;
+    tbody.innerHTML = '<tr><td colspan="8" style="text-align:center;">Loading expenses...</td></tr>';
+
+    const res = await fetchData('/employee/expenses/');
+    if (!res) {
+        tbody.innerHTML = '<tr><td colspan="8" style="text-align:center; color:var(--text-muted);">Failed to load expense records.</td></tr>';
+        return;
+    }
+
+    localExpensesData = res;
+    renderExpenses(res);
+    loadExpenseStats(res);
+}
+
+function renderExpenses(data) {
+    const tbody = document.getElementById('expensesList');
+    if (!tbody) return;
+    tbody.innerHTML = '';
+
+    if (data.length === 0) {
+        tbody.innerHTML = '<tr><td colspan="8" style="text-align:center; color:var(--text-muted); padding: 2rem;">No expense claims found matching filters.</td></tr>';
+        return;
+    }
+
+    data.forEach(exp => {
+        let statusBadge = '';
+        const statusVal = exp.status.toUpperCase();
+        if (statusVal === 'APPROVED') statusBadge = '<span class="status-badge status-present" style="background: rgba(16,185,129,0.15); color: #10b981; padding: 0.25rem 0.6rem; border-radius: 4px; font-size: 0.75rem; font-weight: 600;">Approved</span>';
+        else if (statusVal === 'REJECTED') statusBadge = '<span class="status-badge status-absent" style="background: rgba(244,63,94,0.15); color: #f43f5e; padding: 0.25rem 0.6rem; border-radius: 4px; font-size: 0.75rem; font-weight: 600;">Rejected</span>';
+        else if (statusVal === 'DRAFT') statusBadge = '<span class="status-badge status-draft" style="background: rgba(255,255,255,0.1); color: #9ca3af; padding: 0.25rem 0.6rem; border-radius: 4px; font-size: 0.75rem; font-weight: 600;">Draft</span>';
+        else statusBadge = '<span class="status-badge status-pending" style="background: rgba(245,158,11,0.15); color: #f59e0b; padding: 0.25rem 0.6rem; border-radius: 4px; font-size: 0.75rem; font-weight: 600;">Pending</span>';
+
+        let payBadge = '';
+        const payVal = exp.payment_status.toUpperCase();
+        if (payVal === 'PAID') payBadge = '<span style="color: #10b981; font-weight: 600; font-size: 0.75rem;"><i class="fa-solid fa-circle-check"></i> Paid</span>';
+        else payBadge = '<span style="color: #9ca3af; font-weight: 600; font-size: 0.75rem;"><i class="fa-solid fa-circle-dot"></i> Unpaid</span>';
+
+        let remarks = exp.description || '-';
+        if (exp.manager_remark) remarks += ` (Manager: ${exp.manager_remark})`;
+        else if (exp.team_leader_remark) remarks += ` (TL: ${exp.team_leader_remark})`;
+
+        let receiptLink = '<span style="color:var(--text-muted); font-size:0.85rem;"><i class="fa-solid fa-ban"></i> None</span>';
+        if (exp.receipt) {
+            const fileUrl = exp.receipt.startsWith('http') ? exp.receipt : `http://127.0.0.1:8000${exp.receipt}`;
+            receiptLink = `<a href="${fileUrl}" target="_blank" style="color: var(--primary); text-decoration: none; font-weight: 500; font-size: 0.85rem;"><i class="fa-solid fa-arrow-up-right-from-square"></i> View</a>`;
+        }
+
+        tbody.innerHTML += `
+            <tr>
+                <td>${exp.submitted_at_str || '-'}</td>
+                <td style="font-weight: 600; color:#fff;">${escapeHTML(exp.title)}</td>
+                <td>${escapeHTML(exp.category)}</td>
+                <td style="font-weight: 600;">₹${parseFloat(exp.amount).toFixed(2)}</td>
+                <td>${statusBadge}</td>
+                <td>${payBadge}</td>
+                <td style="max-width: 150px; overflow: hidden; text-overflow: ellipsis; white-space: nowrap;">${escapeHTML(remarks)}</td>
+                <td>${receiptLink}</td>
+            </tr>
+        `;
+    });
+}
+
+function loadExpenseStats(data) {
+    let applied = 0;
+    let approved = 0;
+    let rejected = 0;
+    let pending = 0;
+
+    data.forEach(exp => {
+        const amt = parseFloat(exp.amount) || 0;
+        const stat = exp.status.toUpperCase();
+        if (stat !== 'DRAFT') {
+            applied += amt;
+        }
+        if (stat === 'APPROVED') approved += amt;
+        else if (stat === 'REJECTED') rejected += amt;
+        else if (stat === 'PENDING') pending += amt;
+    });
+
+    const avail = Math.max(0, 50000 - approved);
+
+    document.getElementById('exp-total-applied').innerText = `₹${applied.toLocaleString('en-IN', { minimumFractionDigits: 2, maximumFractionDigits: 2 })}`;
+    document.getElementById('exp-total-approved').innerText = `₹${approved.toLocaleString('en-IN', { minimumFractionDigits: 2, maximumFractionDigits: 2 })}`;
+    document.getElementById('exp-total-rejected').innerText = `₹${rejected.toLocaleString('en-IN', { minimumFractionDigits: 2, maximumFractionDigits: 2 })}`;
+    document.getElementById('exp-total-pending').innerText = `₹${pending.toLocaleString('en-IN', { minimumFractionDigits: 2, maximumFractionDigits: 2 })}`;
+    document.getElementById('exp-avail-balance').innerText = `₹${avail.toLocaleString('en-IN', { minimumFractionDigits: 2, maximumFractionDigits: 2 })}`;
+}
+
+async function filterExpenses() {
+    const searchVal = document.getElementById('expenseSearch').value.toLowerCase();
+    const statusVal = document.getElementById('filterStatus').value;
+    const paymentVal = document.getElementById('filterPayment').value;
+    const startVal = document.getElementById('filterStartDate').value;
+    const endVal = document.getElementById('filterEndDate').value;
+
+    let query = `?search=${encodeURIComponent(searchVal)}`;
+    if (statusVal !== 'ALL') query += `&status=${statusVal}`;
+    if (paymentVal !== 'ALL') query += `&payment_status=${paymentVal}`;
+    if (startVal) query += `&start_date=${startVal}`;
+    if (endVal) query += `&end_date=${endVal}`;
+
+    const res = await fetchData(`/employee/expenses/${query}`);
+    if (res) {
+        renderExpenses(res);
+    }
+}
+
+function clearExpenseFilters() {
+    document.getElementById('expenseSearch').value = '';
+    document.getElementById('filterStatus').value = 'ALL';
+    document.getElementById('filterPayment').value = 'ALL';
+    document.getElementById('filterStartDate').value = '';
+    document.getElementById('filterEndDate').value = '';
+    loadExpenses();
+}
+
+async function submitExpenseClaim(event, isDraft = false) {
+    if (event) event.preventDefault();
+
+    const title = document.getElementById('expenseTitle').value;
+    const category = document.getElementById('expenseCategory').value;
+    const amount = document.getElementById('expenseAmount').value;
+    const description = document.getElementById('expenseDesc').value;
+    const fileInput = document.getElementById('expenseReceipt');
+
+    if (!category || !amount) {
+        alert('Please fill out all required fields.');
+        return;
+    }
+
+    const token = localStorage.getItem('token');
+    if (!token) return;
+
+    // Build FormData for receipt upload
+    const formData = new FormData();
+    formData.append('title', title);
+    formData.append('category', category);
+    formData.append('amount', amount);
+    formData.append('description', description);
+    formData.append('status', isDraft ? 'DRAFT' : 'PENDING');
+    if (fileInput.files.length > 0) {
+        formData.append('receipt', fileInput.files[0]);
+    }
+
+    try {
+        const res = await fetch(`${API_BASE}/employee/expenses/create/`, {
+            method: 'POST',
+            headers: {
+                'Authorization': `Token ${token}`
+            },
+            body: formData
+        });
+
+        if (res.ok) {
+            alert(isDraft ? 'Draft saved successfully!' : 'Expense claim submitted successfully!');
+            closeAddExpenseModal();
+            loadExpenses();
+        } else {
+            const data = await res.json();
+            alert(`Error: ${data.message || 'Failed to submit'}`);
+        }
+    } catch (e) {
+        console.error("Submit claim error:", e);
+        alert('Network error submitting claim.');
+    }
+}
+
+// Simple HTML escaping helper to prevent cross-site scripting (XSS)
+function escapeHTML(str) {
+    if (!str) return '';
+    return str.toString()
+        .replace(/&/g, "&amp;")
+        .replace(/</g, "&lt;")
+        .replace(/>/g, "&gt;")
+        .replace(/"/g, "&quot;")
+        .replace(/'/g, "&#039;");
+}

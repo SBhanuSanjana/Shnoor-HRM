@@ -258,21 +258,36 @@ class Asset(models.Model):
 
 class Expense(models.Model):
     STATUS_CHOICES = [
-        ('pending', 'Pending'),
-        ('approved', 'Approved'),
-        ('rejected', 'Rejected'),
-        ('reimbursed', 'Reimbursed'),
+        ('PENDING', 'Pending'),
+        ('APPROVED', 'Approved'),
+        ('REJECTED', 'Rejected'),
+        ('DRAFT', 'Draft'),
     ]
-    employee = models.ForeignKey(Employee, on_delete=models.CASCADE, related_name='expenses')
-    amount = models.DecimalField(max_digits=10, decimal_places=2)
+    PAYMENT_CHOICES = [
+        ('PAID', 'Paid'),
+        ('UNPAID', 'Unpaid'),
+    ]
+    
+    employee = models.ForeignKey(User, on_delete=models.CASCADE, related_name='expenses_submitted')
+    team_leader = models.ForeignKey(User, on_delete=models.SET_NULL, null=True, blank=True, related_name='expenses_tl_reviewed')
+    manager = models.ForeignKey(User, on_delete=models.SET_NULL, null=True, blank=True, related_name='expenses_manager_reviewed')
+    
+    title = models.CharField(max_length=255, default='Expense Claim')
     category = models.CharField(max_length=100)
+    amount = models.DecimalField(max_digits=10, decimal_places=2)
     description = models.TextField(blank=True, null=True)
-    status = models.CharField(max_length=20, choices=STATUS_CHOICES, default='pending')
-    date = models.DateField(auto_now_add=True)
-    created_at = models.DateTimeField(auto_now_add=True)
+    receipt = models.FileField(upload_to='expense_receipts/', blank=True, null=True)
+    status = models.CharField(max_length=20, choices=STATUS_CHOICES, default='PENDING')
+    payment_status = models.CharField(max_length=20, choices=PAYMENT_CHOICES, default='UNPAID')
+    
+    team_leader_remark = models.TextField(blank=True, null=True)
+    manager_remark = models.TextField(blank=True, null=True)
+    
+    submitted_at = models.DateTimeField(auto_now_add=True)
+    updated_at = models.DateTimeField(auto_now=True)
 
     def __str__(self):
-        return f"{self.employee.user.username} - {self.category} - ₹{self.amount}"
+        return f"{self.employee.username} - {self.category} - ₹{self.amount}"
 
 class Task(models.Model):
     assigned_to = models.ForeignKey(User, on_delete=models.CASCADE)
